@@ -57,8 +57,7 @@ class RgsApiClient {
         /* ---- Determine if we should fall back to mock mode ---- */
         this.useMock =
             !authToken ||
-            authToken === 'SESSION_TOKEN_FROM_STAKE_PLATFORM' ||
-            (/^https?:\/\//.test(rgsUrl) && rgsUrl.includes('rgs.stake-engine.com'));
+            authToken === 'SESSION_TOKEN_FROM_STAKE_PLATFORM';
 
         /* Prepare mock data */
         if (this.useMock) {

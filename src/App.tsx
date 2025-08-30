@@ -109,9 +109,17 @@ const App: React.FC = () => {
                 const socialMode = urlParams.get('social') === 'true';
                 setSocialMode(socialMode);
 
-                // For local development with the mock RGS service, we use a placeholder token.
-                // In a real deployment, the session token would be read from the URL.
-                rgsApiService.initialize("SESSION_TOKEN_FROM_STAKE_PLATFORM", rgsUrl);
+                // Retrieve session token from query params (supports several key variants) or fall back to placeholder.
+                const sessionToken =
+                    urlParams.get('sessionID') ??
+                    urlParams.get('sessionId') ??
+                    urlParams.get('session_id') ??
+                    urlParams.get('session') ??
+                    urlParams.get('token') ??
+                    'SESSION_TOKEN_FROM_STAKE_PLATFORM';
+
+                // Initialize RGS client with resolved session token and base URL.
+                rgsApiService.initialize(sessionToken, rgsUrl);
 
                 // Initialize audio service
                 await audioService.init();
