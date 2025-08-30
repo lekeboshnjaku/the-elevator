@@ -1,0 +1,25 @@
+{
+  "name": "the-elevator-v2",
+  "version": "1.0.0",
+  "description": "A casino-style Limbo game with an elevator theme. Players bet on a target multiplier for a chance to win. This is a simulation and does not involve real money.",
+  "main": "index.js",
+  "scripts": {
+    "start": "esbuild index.tsx --bundle --outfile=dist/bundle.js --sourcemap --serve=8000 --servedir=.",
+    "build": "esbuild index.tsx --bundle --outfile=dist/bundle.js --minify",
+    "typecheck": "tsc --noEmit",
+    "build:math": "math_sdk_project\\env\\Scripts\\python.exe math_sdk_project\\games\\fifty_fifty\\run.py"
+  },
+  "dependencies": {
+    "@fontsource/anton": "^5.2.6",
+    "@fontsource/chakra-petch": "^5.2.6",
+    "@fontsource/orbitron": "^5.2.6",
+    "react": "^19.1.1",
+    "react-dom": "^19.1.1"
+  },
+  "devDependencies": {
+    "@types/react": "^18.3.3",
+    "@types/react-dom": "^18.3.0",
+    "esbuild": "^0.23.0",
+    "typescript": "^5.5.3"
+  }
+}
