@@ -1,7 +1,3 @@
-
-
-
-
 import React, { useState } from 'react';
 import { GameStatus, AutoBetSettings, AutoBetAction, HistoryEntry } from '../types';
 import HistoryBar from './HistoryBar';
@@ -34,12 +30,12 @@ interface ControlsProps {
 const TabButton: React.FC<{ active: boolean; onClick: () => void; children: React.ReactNode }> = ({ active, onClick, children }) => (
     <button
         onClick={onClick}
-        className={`w-full py-2.5 text-sm font-bold uppercase tracking-wider transition-all relative ${
-            active ? 'text-orange-400' : 'text-slate-500 hover:text-orange-300'
+        className={`w-full py-2.5 text-sm font-bold uppercase tracking-wider transition-all relative px-3 text-center ${
+            active ? 'text-sky-400' : 'text-slate-500 hover:text-sky-300'
         }`}
     >
         {children}
-        {active && <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-orange-400 shadow-[0_0_8px_0_#fb923c]"></div>}
+        {active && <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-sky-400 shadow-[0_0_8px_0_#38bdf8]"></div>}
     </button>
 );
 
@@ -80,7 +76,7 @@ const ManualBetPanel: React.FC<Pick<ControlsProps, 'betAmount' | 'setBetAmount' 
                 <InputField label={props.t('targetMultiplier')} value={props.targetMultiplier} onChange={(e) => props.setTargetMultiplier(e.target.value)} disabled={props.isAutoBetting} />
                 <div className="relative">
                     <span className="absolute left-3 top-1 text-xs text-slate-400 uppercase tracking-wider">{props.t('winChance')}</span>
-                    <div className="w-full bg-slate-950/50 rounded-md pt-4 pb-1 sm:pt-6 sm:pb-2 px-3 text-white font-mono text-sm sm:text-lg transition-all duration-300 border border-slate-700 shadow-inner h-full flex items-center">
+                    <div className="w-full bg-slate-950/50 rounded-md pt-5 pb-2 sm:pt-7 sm:pb-3 px-3 text-white font-mono text-sm sm:text-lg transition-all duration-300 border border-slate-700 shadow-inner h-full flex items-center">
                         <span>{winChance.toFixed(4)}%</span>
                     </div>
                 </div>
@@ -155,13 +151,13 @@ const InputField: React.FC<{ label: string; value: string; onChange?: (e: React.
             onChange={onChange}
             disabled={disabled}
             placeholder={placeholder}
-            className={`w-full bg-slate-950/50 rounded-md pt-4 pb-1 sm:pt-6 sm:pb-2 px-3 text-white font-mono text-sm sm:text-lg focus:outline-none transition-all border border-slate-700 shadow-inner disabled:opacity-50 ${isInvalid ? 'ring-2 ring-red-500/70 focus:ring-red-500' : 'focus:ring-2 focus:ring-orange-500 focus:shadow-[0_0_15px_rgba(251,146,60,0.5),_inset_0_0_8px_rgba(251,146,60,0.4)]'}`}
+            className={`w-full bg-slate-950/50 rounded-md pt-5 pb-2 sm:pt-7 sm:pb-3 px-3 text-white font-mono text-sm sm:text-lg focus:outline-none transition-all border border-slate-700 shadow-inner disabled:opacity-50 ${isInvalid ? 'ring-2 ring-red-500/70 focus:ring-red-500' : 'focus:ring-2 focus:ring-sky-500 focus:shadow-[0_0_15px_rgba(56,189,248,0.5),_inset_0_0_8px_rgba(56,189,248,0.4)]'}`}
         />
     </div>
 );
 
 const BetControlButton: React.FC<{ onClick: () => void; children: React.ReactNode; disabled?: boolean; }> = ({ onClick, children, disabled }) => (
-    <button onClick={onClick} disabled={disabled} className="w-full bg-slate-800/70 hover:bg-slate-700/70 rounded text-slate-300 text-xs sm:py-1.5 py-2.5 transition-all duration-200 disabled:opacity-50 disabled:hover:bg-slate-800/70 border border-slate-700 hover:border-orange-400 hover:text-orange-300">
+    <button onClick={onClick} disabled={disabled} className="w-full bg-slate-800/70 hover:bg-slate-700/70 rounded text-slate-300 text-xs sm:py-1.5 py-2.5 transition-all duration-200 disabled:opacity-50 disabled:hover:bg-slate-800/70 border border-slate-700 hover:border-sky-400 hover:text-sky-300">
         {children}
     </button>
 );
@@ -210,11 +206,11 @@ const Controls: React.FC<ControlsProps> = (props) => {
       return isNaN(bet) || bet <= 0 || bet > props.balance;
   }
 
-  const mainButtonAnimation = !isAutoBetting && !isButtonDisabled() ? 'animate-orange-pulse-glow' : '';
+  const mainButtonAnimation = !isAutoBetting && !isButtonDisabled() ? 'animate-blue-pulse-glow' : '';
 
   return (
     <div className="w-full flex flex-col gap-4">
-        <div className="w-full bg-gradient-to-b from-black/60 to-black/40 rounded-lg shadow-2xl border border-slate-700/80">
+        <div className="w-full bg-gradient-to-b from-black/60 to-black/40 rounded-xl shadow-2xl border border-slate-700/80">
             <div className="flex justify-between items-center border-b-2 border-slate-950/50">
                 <div className="grid grid-cols-2 w-1/2">
                     <TabButton active={activeTab === 'manual'} onClick={() => setActiveTab('manual')}>{t('manual')}</TabButton>
@@ -222,7 +218,7 @@ const Controls: React.FC<ControlsProps> = (props) => {
                 </div>
                  <div className="flex items-center gap-4 pr-4">
                     <IconButton onClick={props.toggleInstantBet} title="Toggle Instant Bet">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className={`w-5 h-5 transition-colors ${props.isInstantBet ? 'text-orange-400' : 'text-slate-500 group-hover:text-slate-300'}`}>
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className={`w-5 h-5 transition-colors ${props.isInstantBet ? 'text-sky-400' : 'text-slate-500 group-hover:text-slate-300'}`}>
                             <path d="M11.983 1.904a.75.75 0 0 0-1.292-.904l-7.25 10.5a.75.75 0 0 0 .644 1.25h3.322l-2.305 4.5a.75.75 0 0 0 1.292.904l7.25-10.5a.75.75 0 0 0-.644-1.25h-3.322l2.305-4.5Z" />
                         </svg>
                     </IconButton>
@@ -241,12 +237,12 @@ const Controls: React.FC<ControlsProps> = (props) => {
                 <button
                     onClick={handleMainButtonClick}
                     disabled={isButtonDisabled()}
-                    className={`w-full py-1.5 sm:py-3 lg:py-5 rounded-lg text-sm sm:text-xl font-bold uppercase tracking-wider sm:tracking-widest transition-all duration-300 transform
+                    className={`w-full py-1.5 sm:py-3 lg:py-5 rounded-xl text-sm sm:text-xl font-bold uppercase tracking-wider sm:tracking-widest transition-all duration-300 transform
                     ${isButtonDisabled()
                         ? 'bg-slate-700 text-slate-500 cursor-not-allowed border-b-4 border-slate-800'
                         : isAutoBetting
                             ? 'bg-gradient-to-b from-red-500 to-red-700 text-white hover:from-red-400 hover:to-red-600 active:scale-[0.98] border-b-4 border-red-900 shadow-lg shadow-red-600/30'
-                            : 'bg-gradient-to-b from-orange-500 to-orange-700 text-slate-900 hover:from-orange-400 hover:to-orange-600 active:scale-[0.98] border-b-4 border-orange-900 shadow-2xl'
+                            : 'bg-gradient-to-b from-sky-500 to-sky-700 text-white hover:from-sky-400 hover:to-sky-600 active:scale-[0.98] border-b-4 border-sky-900 shadow-lg shadow-sky-600/30 rounded-xl'
                     } ${mainButtonAnimation}`}
                 >
                     {getButtonText()}

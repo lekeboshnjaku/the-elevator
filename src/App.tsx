@@ -145,7 +145,25 @@ const App: React.FC = () => {
             } catch (error) {
                  console.error("Critical initialization failure:", error);
                  const root = document.getElementById('root');
-                 if(root) root.innerHTML = '<div style="color: red; padding: 20px; text-align: center;">Failed to load game. Please refresh.</div>';
+                 if (root) {
+                     // Safely embed the error details so the user/dev can see what went wrong.
+                     const escapeHtml = (str: string) =>
+                         str.replace(/&/g, '&amp;')
+                            .replace(/</g, '&lt;')
+                            .replace(/>/g, '&gt;');
+
+                     const msg =
+                         error instanceof Error
+                             ? (error.stack || error.message)
+                             : String(error);
+
+                     root.innerHTML = `<div style="color: red; padding: 20px; text-align: center;">
+                         Failed to load game. Please refresh.
+                         <pre style="margin-top:1em;text-align:left;color:#f87171;white-space:pre-wrap;">${escapeHtml(
+                             msg,
+                         )}</pre>
+                     </div>`;
+                 }
             }
         };
 
@@ -324,7 +342,7 @@ const App: React.FC = () => {
     return (
         <main
             className="relative flex h-screen w-full flex-col font-sans overflow-hidden bg-slate-950 text-white"
-            style={{ fontFamily: '"Chakra Petch", sans-serif' }}
+            style={{ fontFamily: 'Inter, "Chakra Petch", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif' }}
             onDragEnter={handleDragEnter}
             onDragOver={handleDragOver}
             onDragLeave={handleDragLeave}

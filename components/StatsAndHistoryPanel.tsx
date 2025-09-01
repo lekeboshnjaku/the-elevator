@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { HistoryEntry } from '../types';
 
@@ -24,7 +23,7 @@ const HistoryGraph: React.FC<{ history: HistoryEntry[] }> = ({ history }) => {
     }
 
     return (
-        <div className="h-40 bg-slate-950/50 rounded-lg p-2 relative border border-slate-700/50 flex items-end justify-around shadow-inner">
+        <div className="h-40 bg-slate-950/50 rounded-xl p-2 relative border border-slate-700/50 flex items-end justify-around shadow-inner">
              {/* Background grid lines */}
              <div className="absolute inset-0 flex flex-col justify-between p-2 pointer-events-none">
                 <div className="w-full border-t border-dashed border-slate-700/50"></div>
@@ -38,7 +37,7 @@ const HistoryGraph: React.FC<{ history: HistoryEntry[] }> = ({ history }) => {
                 return (
                     <div key={index} className="group relative w-2 h-full flex items-end justify-center">
                         <div 
-                            className={`w-1.5 h-1.5 rounded-full ${colorClass} transition-all duration-300`}
+                            className={`w-1.5 h-1.5 rounded-full ${colorClass} transition-all duration-300 animate-dot-pop`}
                             style={{ bottom: `calc(${y}% - 3px)` }}
                         ></div>
                         <div className="absolute bottom-full mb-2 hidden group-hover:block bg-slate-950 px-2 py-1 rounded-md text-xs font-mono whitespace-nowrap z-10">
@@ -60,8 +59,8 @@ const StatsAndHistoryPanel: React.FC<StatsAndHistoryPanelProps> = ({ history, se
     const profitColor = sessionProfit > 0 ? 'text-green-400' : sessionProfit < 0 ? 'text-red-500' : 'text-slate-300';
 
     return (
-        <div className="relative w-full bg-gradient-to-b from-black/60 to-black/40 rounded-lg shadow-2xl p-3 space-y-4 border animate-cyan-pulse-border">
-             <div className="absolute inset-0 bg-black/10 rounded-lg overflow-hidden pointer-events-none">
+        <div className="relative w-full bg-gradient-to-b from-black/60 to-black/40 rounded-xl shadow-2xl p-3 space-y-4 border animate-cyan-pulse-border">
+             <div className="absolute inset-0 bg-black/10 rounded-xl overflow-hidden pointer-events-none">
                 {/* Scanline effect */}
                 <div className="absolute inset-0" style={{background: 'repeating-linear-gradient(0deg, rgba(0,0,0,0.3) 0, rgba(0,0,0,0.3) 1px, transparent 1px, transparent 3px)'}}></div>
             </div>
@@ -87,7 +86,7 @@ const StatsAndHistoryPanel: React.FC<StatsAndHistoryPanelProps> = ({ history, se
                 </div>
                  <div className="bg-slate-950/50 p-2 rounded-md border border-slate-700/50 shadow-inner">
                     <div className="text-xs text-slate-400 uppercase">Highest</div>
-                    <div className="font-mono font-bold text-amber-400">{highestMultiplier.toFixed(2)}x</div>
+                    <div className="font-mono font-bold text-sky-400">{highestMultiplier.toFixed(2)}x</div>
                 </div>
             </div>
             
