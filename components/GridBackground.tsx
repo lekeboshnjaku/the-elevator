@@ -1,64 +1,46 @@
 import React, { FC } from 'react';
 
-// Base64 encoded background image data.
-const futuristicElevatorShaftBg = 'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wCEAAoGBxMUExYUFBQYGBYZGhocGRoYGhsZGhsdHBsgHx4dHx4dHywiHyAmHhodIjQjKS0uMTMzGSI4QDQwPSgxPzcBCwsLDw4PHRERHTAnIikxMDIxMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMv/AABEIAKcBLwMBIgACEQEDEQH/xAbAAACAwEBAQAAAAAAAAAAAAADBAABAgUGB//EADkQAAIBAgQDBgQEBQQDAQAAAAABAgMRBBIhMQVBURMiYXEygZGhFCNCscHR4fDxBhVScoJTYpKyM//EABgBAQEBAQEAAAAAAAAAAAAAAAABAgME/8QAHBEBAQEBAQEAAwEAAAAAAAAAAAERAhIhMQNBIv/aAAwDAQACEQMRAD8A9XATsBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQE-';
-
-const CautionStrips: FC = () => (
-    <>
-        <style>{`
-            .caution-strip {
-                position: fixed; /* Use fixed positioning to ignore parent overflow */
-                width: 300px;
-                height: 50px;
-                background: repeating-linear-gradient(
-                    -45deg,
-                    #facc15,
-                    #facc15 20px,
-                    #111827 20px,
-                    #111827 40px
-                );
-                opacity: 0.6;
-                box-shadow: 0 0 15px rgba(250, 204, 21, 0.2);
-                border: 1px solid rgba(0,0,0,0.5);
-                z-index: 5; /* Position above background but below most UI */
-                pointer-events: none; /* Make sure they don't block clicks */
-            }
-        `}</style>
-        {/* Top-left */}
-        <div className="caution-strip" style={{ top: '20px', left: '-80px', transform: 'rotate(-45deg)' }} />
-        {/* Top-right */}
-        <div className="caution-strip" style={{ top: '20px', right: '-80px', transform: 'rotate(45deg)' }} />
-        {/* Bottom-left */}
-        <div className="caution-strip" style={{ bottom: '20px', left: '-80px', transform: 'rotate(45deg)' }} />
-        {/* Bottom-right */}
-        <div className="caution-strip" style={{ bottom: '20px', right: '-80px', transform: 'rotate(-45deg)' }} />
-    </>
-);
-
 const ElevatorShaftBackground: FC = () => {
-    return (
-        <div className="absolute inset-0 w-full h-full overflow-hidden bg-black z-0">
-            <style>{`
-                .animated-bg {
-                    position: absolute;
-                    inset: 0;
-                    width: 100%;
-                    height: 100%;
-                    background-image: url('${futuristicElevatorShaftBg}');
-                    background-size: cover;
-                    background-position: center;
-                }
-            `}</style>
-            <div className="animated-bg"></div>
-             {/* Caution strips overlay */}
-            <CautionStrips />
-            {/* Vignette overlay for a more cinematic feel */}
-            <div 
-                className="absolute inset-0 z-10"
-                style={{ boxShadow: 'inset 0 0 15vw 5vw #020617' }}
-            ></div>
-        </div>
-    );
+  return (
+    <div className="absolute inset-0 w-full h-full overflow-hidden z-0" aria-hidden>
+      {/* Dark blue gradient base */}
+      <div
+        className="absolute inset-0"
+        style={{
+          background:
+            'linear-gradient(180deg, #0a1830 0%, #081629 55%, #050f20 100%)',
+          filter: 'saturate(110%)',
+          willChange: 'transform'
+        }}
+      />
+
+      {/* Subtle swirl rings (very low opacity) */}
+      <div
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          background:
+            'conic-gradient(from 110deg at 50% 42%, rgba(0,255,255,0.06) 0 12deg, transparent 12deg 360deg), ' +
+            'conic-gradient(from 290deg at 50% 62%, rgba(0,200,255,0.04) 0 10deg, transparent 10deg 360deg)'
+        }}
+      />
+
+      {/* Soft neon glow accents */}
+      <div
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          background:
+            'radial-gradient(900px 600px at 15% 80%, rgba(0,255,255,0.10), transparent 70%), ' +
+            'radial-gradient(1000px 700px at 85% 25%, rgba(0,180,255,0.08), transparent 70%)'
+        }}
+      />
+
+      {/* Gentle center focus/vignette */}
+      <div
+        className="absolute inset-0 pointer-events-none"
+        style={{ boxShadow: 'inset 0 0 180px rgba(0,0,0,0.55)' }}
+      />
+    </div>
+  );
 };
 
 export default ElevatorShaftBackground;
