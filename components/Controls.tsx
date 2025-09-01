@@ -216,21 +216,23 @@ const Controls: React.FC<ControlsProps> = (props) => {
                     <TabButton active={activeTab === 'manual'} onClick={() => setActiveTab('manual')}>{t('manual')}</TabButton>
                     <TabButton active={activeTab === 'auto'} onClick={() => setActiveTab('auto')}>{t('auto')}</TabButton>
                 </div>
-                 <div className="flex items-center gap-4 pr-4">
+                 <div className="flex items-center gap-4 pr-3">
                     <IconButton onClick={props.toggleInstantBet} title="Toggle Instant Bet">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className={`w-5 h-5 transition-colors ${props.isInstantBet ? 'text-sky-400' : 'text-slate-500 group-hover:text-slate-300'}`}>
                             <path d="M11.983 1.904a.75.75 0 0 0-1.292-.904l-7.25 10.5a.75.75 0 0 0 .644 1.25h3.322l-2.305 4.5a.75.75 0 0 0 1.292.904l7.25-10.5a.75.75 0 0 0-.644-1.25h-3.322l2.305-4.5Z" />
                         </svg>
                     </IconButton>
-                    <button onClick={props.openRules} className="text-xs text-slate-400 hover:text-white uppercase tracking-wider">{t('rules')}</button>
-                    <IconButton onClick={props.toggleFairness} title="Provably Fair">
+                    {/* Rules + Fairness grouped for consistent spacing */}
+                    <div className="flex items-center gap-2">
+                        <button onClick={props.openRules} className="text-xs text-slate-400 hover:text-white uppercase tracking-wider">{t('rules')}</button>
+                        <IconButton onClick={props.toggleFairness} title="Provably Fair">
                         <svg
                             xmlns="http://www.w3.org/2000/svg"
                             viewBox="0 0 24 24"
                             fill="none"
                             stroke="currentColor"
                             strokeWidth="1.8"
-                            className="w-5 h-5 text-slate-400 transition-colors group-hover:text-sky-400 drop-shadow-[0_0_6px_rgba(56,189,248,0.35)] hover:drop-shadow-[0_0_12px_rgba(56,189,248,0.6)]"
+                            className="w-5 h-5 text-slate-400 transition-colors group-hover:text-sky-400 drop-shadow-[0_0_6px_rgba(56,189,248,0.35)] hover:drop-shadow-[0_0_12px_rgba(56,189,248,0.6)] align-middle relative top-[1px]"
                         >
                             <path
                                 strokeLinecap="round"
@@ -239,6 +241,7 @@ const Controls: React.FC<ControlsProps> = (props) => {
                             />
                         </svg>
                     </IconButton>
+                    </div>
                 </div>
             </div>
 
