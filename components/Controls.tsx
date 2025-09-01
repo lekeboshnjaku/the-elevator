@@ -212,7 +212,7 @@ const Controls: React.FC<ControlsProps> = (props) => {
     <div className="w-full flex flex-col gap-4">
         <div className="w-full bg-gradient-to-b from-black/60 to-black/40 rounded-xl shadow-2xl border border-slate-700/80">
             <div className="flex justify-between items-center border-b-2 border-slate-950/50">
-                <div className="relative grid grid-cols-2 flex-1">
+                <div className="relative grid grid-cols-2 flex-1 gap-3 px-2">
                     <TabButton active={activeTab === 'manual'} onClick={() => setActiveTab('manual')}>{t('manual')}</TabButton>
                     <TabButton active={activeTab === 'auto'} onClick={() => setActiveTab('auto')}>{t('auto')}</TabButton>
                     {/* vertical divider */}
