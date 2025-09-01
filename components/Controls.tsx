@@ -223,7 +223,22 @@ const Controls: React.FC<ControlsProps> = (props) => {
                         </svg>
                     </IconButton>
                     <button onClick={props.openRules} className="text-xs text-slate-400 hover:text-white uppercase tracking-wider">{t('rules')}</button>
-                    <button onClick={props.toggleFairness} className="text-xs text-slate-400 hover:text-white uppercase tracking-wider">{t('fairness')}</button>
+                    <IconButton onClick={props.toggleFairness} title="Provably Fair">
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="1.8"
+                            className="w-5 h-5 text-slate-400 transition-colors group-hover:text-sky-400 drop-shadow-[0_0_6px_rgba(56,189,248,0.35)] hover:drop-shadow-[0_0_12px_rgba(56,189,248,0.6)]"
+                        >
+                            <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                d="M12 2.25 20.25 6v5.25c0 5.385-3.693 10.74-7.5 12-3.807-1.26-7.5-6.615-7.5-12V6L12 2.25Z"
+                            />
+                        </svg>
+                    </IconButton>
                 </div>
             </div>
 
