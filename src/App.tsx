@@ -57,6 +57,11 @@ const App: React.FC = () => {
     const [isAchievementsOpen, setAchievementsOpen] = useState(false);
     const [achievementToastQueue, setAchievementToastQueue] = useState<Achievement[]>([]);
 
+    // Responsive scaling
+    const DESIGN_WIDTH = 1400;
+    const DESIGN_HEIGHT = 900;
+    const [scale, setScale] = useState(1);
+
     // Refs
     const fairnessContainerRef = useRef<HTMLDivElement>(null);
     const welcomePlayedRef = useRef(false);
@@ -178,7 +183,23 @@ const App: React.FC = () => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
-    // ---- Effects ----
+    // Responsive scaling calculation
+    const recomputeScale = useCallback(() => {
+      const vw = window.innerWidth;
+      const vh = window.innerHeight;
+      const s = Math.min(vw / DESIGN_WIDTH, vh / DESIGN_HEIGHT);
+      setScale(s);
+    }, []);
+
+    useEffect(() => {
+      recomputeScale();
+      window.addEventListener('resize', recomputeScale);
+      window.addEventListener('orientationchange', recomputeScale);
+      return () => {
+        window.removeEventListener('resize', recomputeScale);
+        window.removeEventListener('orientationchange', recomputeScale);
+      };
+    }, [recomputeScale]);
 
     // ---- Helper Functions ----
     const formatCurrency = useCallback((amount: number) => {
@@ -244,14 +265,7 @@ const App: React.FC = () => {
     /* ------------------------------------------------------------------ */
     /*                Bet-start thud (manual, auto, programmatic)        */
     /* ------------------------------------------------------------------ */
-    const prevStatusRef = useRef<GameStatus>(GameStatus.IDLE);
-    useEffect(() => {
-        if (prevStatusRef.current !== GameStatus.PLAYING &&
-            game.gameStatus === GameStatus.PLAYING) {
-            audioService.playBetSound();
-        }
-        prevStatusRef.current = game.gameStatus;
-    }, [game.gameStatus]);
+    // Thud sound removed per new requirements
 
     // Effect for ARIA live region announcements for accessibility
     useEffect(() => {
@@ -368,21 +382,27 @@ const App: React.FC = () => {
                 {liveRegionMessage}
             </div>
 
-            {/* Header */}
-            <header className="relative z-20 flex w-full flex-shrink-0 items-center justify-between p-4">
-                <div className="bg-slate-900/50 p-2 rounded-md flex items-center gap-2 border border-slate-700/50 shadow-md">
-                    <span className="text-amber-400 font-bold text-lg" style={{textShadow: '0 0 5px #ffc700'}}>
-                        {formatCurrency(game.balance)}
-                    </span>
-                </div>
-                <div className="flex items-center gap-3">
-                     <div
-                        className="hidden sm:flex items-center gap-1 bg-slate-900/50 p-1 rounded-md border border-slate-700/50"
-                        onMouseEnter={() => setVolumeSliderVisible(true)}
-                        onMouseLeave={() => setVolumeSliderVisible(false)}
-                     >
-                        {/* Master Volume Button */}
-                        <button onClick={() => setMuted(!isMuted)} className="p-2 rounded-full hover:bg-slate-700/50 active:scale-90 transition-all" aria-label={isMuted ? "Unmute" : "Mute"}>
+            <div className="relative z-10 flex flex-1 flex-col items-center min-h-0">
+                <div className="fixed inset-0 z-10 flex items-start justify-center pt-2 pointer-events-none">
+                  <div
+                    className="relative pointer-events-auto flex flex-col"
+                    style={{ width: DESIGN_WIDTH, height: DESIGN_HEIGHT, transform: `scale(${scale})`, transformOrigin: 'top center' }}
+                  >
+                    {/* Header (updated classes below) */}
+                    <header className="relative z-20 flex w-full items-center justify-between p-4">
+                      <div className="bg-slate-900/50 p-2 rounded-md flex items-center gap-2 border border-slate-700/50 shadow-md">
+                        <span className="text-amber-400 font-bold text-lg" style={{ textShadow: '0 0 5px #ffc700' }}>
+                          {formatCurrency(game.balance)}
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <div
+                          className="flex items-center gap-1 bg-slate-900/50 p-1 rounded-md border border-slate-700/50"
+                          onMouseEnter={() => setVolumeSliderVisible(true)}
+                          onMouseLeave={() => setVolumeSliderVisible(false)}
+                        >
+                          {/* Master Volume Button */}
+                          <button onClick={() => setMuted(!isMuted)} className="p-2 rounded-full hover:bg-slate-700/50 active:scale-90 transition-all" aria-label={isMuted ? 'Unmute' : 'Mute'}>
                             {isMuted ? (
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5 text-slate-400">
                                     <path d="M13.5 4.06c0-1.336-1.616-2.005-2.56-1.06l-4.5 4.5H4.508c-1.141 0-2.318.664-2.66 1.905A9.76 9.76 0 001.5 12c0 .898.121 1.768.35 2.595.341 1.24 1.518 1.905 2.66 1.905H6.44l4.5 4.5c.944.945 2.56.276 2.56-1.06V4.06zM18.28 17.28a.75.75 0 001.06-1.06l-7.5-7.5a.75.75 0 00-1.06 1.06l7.5 7.5z" />
@@ -394,13 +414,12 @@ const App: React.FC = () => {
                                     <path d="M15.932 7.757a.75.75 0 011.061 0 6 6 0 010 8.486.75.75 0 01-1.06-1.061 4.5 4.5 0 000-6.364.75.75 0 010-1.06z" />
                                 </svg>
                             )}
-                        </button>
-                        {/* Volume Slider with transition */}
-                        <div className={`overflow-hidden transition-all duration-300 ease-in-out ${isVolumeSliderVisible ? 'w-24 opacity-100' : 'w-0 opacity-0'}`}>
+                          </button>
+                          <div className={`overflow-hidden transition-all duration-300 ease-in-out ${isVolumeSliderVisible ? 'w-24 opacity-100' : 'w-0 opacity-0'}`}>
                             <VolumeControl volume={volume} onVolumeChange={setVolume} />
-                        </div>
-                        {/* Operator Mute Button */}
-                        <button onClick={() => setOperatorMuted(!isOperatorMuted)} className="p-2 rounded-full hover:bg-slate-700/50 active:scale-90 transition-all" aria-label={isOperatorMuted ? "Unmute operator voice" : "Mute operator voice"}>
+                          </div>
+                          {/* Operator Mute Button */}
+                          <button onClick={() => setOperatorMuted(!isOperatorMuted)} className="p-2 rounded-full hover:bg-slate-700/50 active:scale-90 transition-all" aria-label={isOperatorMuted ? 'Unmute operator voice' : 'Mute operator voice'}>
                             {isOperatorMuted ? (
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5 text-slate-400">
                                     <path d="M13.5 18.75a3.375 3.375 0 01-3.375-3.375V6.375a3.375 3.375 0 016.75 0v8.999a3.375 3.375 0 01-3.375 3.375z" />
@@ -413,138 +432,61 @@ const App: React.FC = () => {
                                     <path d="M6 10.5v.75c0 3.31 2.69 6 6 6s6-2.69 6-6v-.75h-1.5v.75c0 2.48-2.02 4.5-4.5 4.5s-4.5-2.02-4.5-4.5v-.75H6z" />
                                 </svg>
                             )}
+                          </button>
+                        </div>
+                        <button
+                          onClick={() => setAchievementsOpen(true)}
+                          className="group block p-2 rounded-full hover:bg-slate-800/80 active:scale-95 transition-all bg-slate-900/50 border border-amber-500/40 shadow-lg shadow-amber-500/20 hover:shadow-amber-400/40"
+                          aria-label="Open achievements panel"
+                        >
+                          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6 text-amber-400 group-hover:text-amber-300 transition-colors duration-200">
+                             <path fillRule="evenodd" d="M12 22C6.477 22 2 17.523 2 12S6.477 2 12 2s10 4.477 10 10-4.477 10-10 10ZM12 18a6 6 0 1 0 0-12 6 6 0 0 0 0 12Z" clipRule="evenodd" />
+                          </svg>
                         </button>
-                    </div>
-                     <button
-                        onClick={() => setAchievementsOpen(true)}
-                        className="group hidden sm:block p-2 rounded-full hover:bg-slate-800/80 active:scale-95 transition-all bg-slate-900/50 border border-amber-500/40 shadow-lg shadow-amber-500/20 hover:shadow-amber-400/40"
-                        aria-label="Open achievements panel"
-                    >
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6 text-amber-400 group-hover:text-amber-300 transition-colors duration-200">
-                           <path fillRule="evenodd" d="M12 22C6.477 22 2 17.523 2 12S6.477 2 12 2s10 4.477 10 10-4.477 10-10 10ZM12 18a6 6 0 1 0 0-12 6 6 0 0 0 0 12Z" clipRule="evenodd" />
-                        </svg>
-                    </button>
-                     <button
-                        className="lg:hidden bg-slate-800/80 p-3 rounded-full text-white hover:bg-slate-700/80 active:scale-90 transition-all"
-                        onClick={() => setStatsPanelOpen(true)}
-                        aria-label="Open stats panel"
-                    >
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-5 h-5"><path d="M1 1.75A.75.75 0 0 1 1.75 1h16.5a.75.75 0 0 1 0 1.5H1.75A.75.75 0 0 1 1 1.75ZM1 6.25A.75.75 0 0 1 1.75 5.5h16.5a.75.75 0 0 1 0 1.5H1.75A.75.75 0 0 1 1 6.25ZM1.75 10a.75.75 0 0 0 0 1.5h16.5a.75.75 0 0 0 0-1.5H1.75Z" /><path d="M1.75 15.5a.75.75 0 0 1 .75-.75h1.5a.75.75 0 0 1 0 1.5h-1.5a.75.75 0 0 1-.75-.75Zm3.75 0a.75.75 0 0 1 .75-.75h1.5a.75.75 0 0 1 0 1.5h-1.5a.75.75 0 0 1-.75-.75Zm3.75 0a.75.75 0 0 1 .75-.75h1.5a.75.75 0 0 1 0 1.5h-1.5a.75.75 0 0 1-.75-.75Z" /></svg>
-                    </button>
-                </div>
-            </header>
+                        {/* Remove mobile stats hamburger */}
+                      </div>
+                    </header>
 
-            {/* Main Content Area */}
-            <div className="relative z-10 flex flex-1 flex-col items-center min-h-0">
-                 {/* Desktop Layout Wrapper */}
-                <div className="relative hidden h-full w-full max-w-[1600px] justify-center gap-12 px-4 lg:flex xl:gap-16 xl:px-8 items-center">
-                    {/* Left Control Wing (Stats) */}
-                    <aside className="w-full max-w-[250px] flex-shrink-0 xl:max-w-[300px]">
-                        <StatsAndHistoryPanel
-                            history={game.history}
-                            sessionProfit={game.sessionProfit}
-                            formatCurrency={formatCurrency}
-                        />
-                    </aside>
-
-                    {/* Central Shaft Content */}
-                    <section className="flex h-full max-w-[480px] flex-shrink-0 flex-col items-center justify-center xl:max-w-lg">
+                    {/* Desktop layout only, always visible */}
+                    <div className="relative flex-1 w-full flex justify-center items-center gap-12 px-4">
+                      <aside className="w-full max-w-[300px] flex-shrink-0">
+                        <StatsAndHistoryPanel history={game.history} sessionProfit={game.sessionProfit} formatCurrency={formatCurrency} />
+                      </aside>
+                      <section className="flex h-full max-w-[520px] flex-shrink-0 flex-col items-center justify-center">
                         <div className="flex flex-col items-center relative w-full gap-4">
-                            <div className="w-44 sm:w-64 lg:w-80 xl:w-96 flex items-center justify-center">
-                                <ElevatorIndicator
-                                    gameStatus={game.gameStatus}
-                                    lastResult={game.lastResult}
-                                    targetMultiplier={game.targetMultiplier}
-                                    isInstantBet={isInstantBet}
-                                />
-                            </div>
-                            <Elevator
-                                gameStatus={game.gameStatus}
-                                lastResult={game.lastResult}
-                                targetMultiplier={game.targetMultiplier}
-                                isInstantBet={isInstantBet}
-                            />
+                          <div className="w-96 flex items-center justify-center">
+                            <ElevatorIndicator gameStatus={game.gameStatus} lastResult={game.lastResult} targetMultiplier={game.targetMultiplier} isInstantBet={isInstantBet} />
+                          </div>
+                          <Elevator gameStatus={game.gameStatus} lastResult={game.lastResult} targetMultiplier={game.targetMultiplier} isInstantBet={isInstantBet} />
                         </div>
-                    </section>
-
-                    {/* Right Control Wing (Controls) */}
-                    <aside className="w-full max-w-[250px] flex-shrink-0 xl:max-w-[300px]">
+                      </section>
+                      <aside className="w-full max-w-[300px] flex-shrink-0">
                         <Controls
-                            betAmount={game.betAmount}
-                            setBetAmount={game.setBetAmount}
-                            targetMultiplier={game.targetMultiplier}
-                            setTargetMultiplier={game.setTargetMultiplier}
-                            placeBet={game.placeBet}
-                            balance={game.balance}
-                            canBet={game.canBet}
-                            gameStatus={game.gameStatus}
-                            history={game.history}
-                            isAutoBetting={game.isAutoBetting}
-                            startAutoBet={game.startAutoBet}
-                            stopAutoBet={game.stopAutoBet}
-                            betsRemaining={game.betsRemaining}
-                            openRules={() => setRulesOpen(true)}
-                            openMath={() => setMathOpen(true)}
-                            toggleFairness={() => setFairnessOpen(!isFairnessOpen)}
-                            maxBet={game.betLimits.maxBet}
-                            isInstantBet={isInstantBet}
-                            toggleInstantBet={() => setInstantBet(!isInstantBet)}
-                            isBetAmountInvalid={game.isBetAmountInvalid}
-                            t={t}
+                          betAmount={game.betAmount}
+                          setBetAmount={game.setBetAmount}
+                          targetMultiplier={game.targetMultiplier}
+                          setTargetMultiplier={game.setTargetMultiplier}
+                          placeBet={game.placeBet}
+                          balance={game.balance}
+                          canBet={game.canBet}
+                          gameStatus={game.gameStatus}
+                          history={game.history}
+                          isAutoBetting={game.isAutoBetting}
+                          startAutoBet={game.startAutoBet}
+                          stopAutoBet={game.stopAutoBet}
+                          betsRemaining={game.betsRemaining}
+                          openRules={() => setRulesOpen(true)}
+                          openMath={() => setMathOpen(true)}
+                          toggleFairness={() => setFairnessOpen(!isFairnessOpen)}
+                          maxBet={game.betLimits.maxBet}
+                          isInstantBet={isInstantBet}
+                          toggleInstantBet={() => setInstantBet(!isInstantBet)}
+                          isBetAmountInvalid={game.isBetAmountInvalid}
+                          t={t}
                         />
-                    </aside>
-                </div>
-
-                {/* Mobile Layout (Refactored) */}
-                <div className="lg:hidden flex flex-1 flex-col w-full items-center justify-end gap-4 p-4">
-                    {/* Mobile Central Shaft Content */}
-                    <section className="flex w-full max-w-lg flex-col items-center">
-                        <div className="flex flex-col items-center relative w-full gap-4">
-                            <div className="w-44 sm:w-64 flex items-center justify-center">
-                                <ElevatorIndicator
-                                    gameStatus={game.gameStatus}
-                                    lastResult={game.lastResult}
-                                    targetMultiplier={game.targetMultiplier}
-                                    isInstantBet={isInstantBet}
-                                />
-                            </div>
-                            <Elevator
-                                gameStatus={game.gameStatus}
-                                lastResult={game.lastResult}
-                                targetMultiplier={game.targetMultiplier}
-                                isInstantBet={isInstantBet}
-                            />
-                        </div>
-                    </section>
-
-                    {/* Mobile Controls */}
-                    <aside className="relative z-20 w-full">
-                        <div className="mx-auto max-w-sm">
-                            <Controls
-                                betAmount={game.betAmount}
-                                setBetAmount={game.setBetAmount}
-                                targetMultiplier={game.targetMultiplier}
-                                setTargetMultiplier={game.setTargetMultiplier}
-                                placeBet={game.placeBet}
-                                balance={game.balance}
-                                canBet={game.canBet}
-                                gameStatus={game.gameStatus}
-                                history={game.history}
-                                isAutoBetting={game.isAutoBetting}
-                                startAutoBet={game.startAutoBet}
-                                stopAutoBet={game.stopAutoBet}
-                                betsRemaining={game.betsRemaining}
-                                openRules={() => setRulesOpen(true)}
-                                openMath={() => setMathOpen(true)}
-                                toggleFairness={() => setFairnessOpen(!isFairnessOpen)}
-                                maxBet={game.betLimits.maxBet}
-                                isInstantBet={isInstantBet}
-                                toggleInstantBet={() => setInstantBet(!isInstantBet)}
-                                isBetAmountInvalid={game.isBetAmountInvalid}
-                                t={t}
-                            />
-                        </div>
-                    </aside>
+                      </aside>
+                    </div>
+                  </div>
                 </div>
             </div>
 
@@ -560,20 +502,6 @@ const App: React.FC = () => {
                     />
                 )}
             </div>
-
-            {/* Mobile Stats Panel (Modal-like) */}
-            {isStatsPanelOpen && (
-                 <div className="fixed inset-0 bg-black/70 z-30 lg:hidden">
-                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-md p-4">
-                         <StatsAndHistoryPanel
-                            history={game.history}
-                            sessionProfit={game.sessionProfit}
-                            formatCurrency={formatCurrency}
-                            onClose={() => setStatsPanelOpen(false)}
-                        />
-                    </div>
-                 </div>
-            )}
 
             {/* Modals & Overlays */}
             <AchievementsPanel

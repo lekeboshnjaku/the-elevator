@@ -181,9 +181,6 @@ const Controls: React.FC<ControlsProps> = (props) => {
     if (isAutoBetting) {
         stopAutoBet();
     } else {
-        // Play deep thud when a new bet is initiated
-        audioService.playBetSound();
-
         if (activeTab === 'manual') {
             placeBet();
         } else { // activeTab === 'auto'

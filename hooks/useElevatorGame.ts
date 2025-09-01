@@ -214,10 +214,7 @@ export const useElevatorGame = (isInstantBet: boolean) => {
     const isTargetValid = !isNaN(target) && target >= 1.01 && target <= MAX_MULTIPLIER;
 
     if (gameStatus !== GameStatus.IDLE || !isBetValid || !isTargetValid) return;
-    
-    if (!isInstantBet) {
-      audioService.playBetSound();
-    }
+
     setGameStatus(GameStatus.PLAYING);
     if(error) setError(null);
     setTotalWagered(prev => prev + bet); // Track total wagered for reality check

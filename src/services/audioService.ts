@@ -679,38 +679,8 @@ class AudioService {
     }
 
     public playBetSound = () => {
-        if (!this.audioContext || !this.masterGain) return;
-        this.resumeContext();
-        const now = this.audioContext.currentTime;
-
-        /* THUD PART (sine-sweep kick) */
-        const kickOsc = this.audioContext.createOscillator();
-        const kickGain = this.audioContext.createGain();
-        kickOsc.type = 'sine';
-        kickOsc.frequency.setValueAtTime(120, now);
-        kickOsc.frequency.exponentialRampToValueAtTime(40, now + 0.12);
-        kickGain.gain.setValueAtTime(0.001, now);
-        kickGain.gain.exponentialRampToValueAtTime(0.9, now + 0.005);
-        kickGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.14);
-        kickOsc.connect(kickGain);
-        kickGain.connect(this.masterGain);
-        kickOsc.start(now);
-        kickOsc.stop(now + 0.15);
-
-        /* CLICK PART (adds definition) */
-        const clickNoise = this.audioContext.createBufferSource();
-        const bufferSize = this.audioContext.sampleRate * 0.04;
-        const buffer = this.audioContext.createBuffer(1, bufferSize, this.audioContext.sampleRate);
-        const data = buffer.getChannelData(0);
-        for (let i = 0; i < bufferSize; i++) data[i] = Math.random() * 2 - 1;
-        clickNoise.buffer = buffer;
-        const clickGain = this.audioContext.createGain();
-        clickGain.gain.setValueAtTime(0.25, now);
-        clickGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.04);
-        clickNoise.connect(clickGain);
-        clickGain.connect(this.masterGain);
-        clickNoise.start(now);
-        clickNoise.stop(now + 0.05);
+        // No-op implementation to remove thud/click sounds
+        return;
     }
 
     public playDoorOpenSound = () => {
