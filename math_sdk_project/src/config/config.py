@@ -3,6 +3,7 @@
 from src.config.betmode import BetMode
 from src.config.paths import PATH_TO_GAMES
 import os
+from typing import Optional
 
 
 class Config:
@@ -139,11 +140,25 @@ class Config:
 
         return reelstrips
 
-    def construct_paths(self) -> None:
-        """Assign all output file paths"""
+    def construct_paths(self, game_id: Optional[str] = None) -> None:
+        """Assign all output file paths
+
+        Parameters
+        ----------
+        game_id : Optional[str]
+            An optional game identifier. If provided, this will override
+            the current ``self.game_id`` before path construction.  This
+            keeps the method backward-compatible with callers that pass a
+            positional ``game_id`` argument.
+        """
+        if game_id is not None:
+            self.game_id = game_id
+
         self.reels_path = os.path.join(PATH_TO_GAMES, self.game_id, "reels")
         self.library_path = os.path.join(PATH_TO_GAMES, self.game_id, "library")
-        self.publish_path = os.path.join(PATH_TO_GAMES, self.game_id, "library", "publish_files")
+        self.publish_path = os.path.join(
+            PATH_TO_GAMES, self.game_id, "library", "publish_files"
+        )
 
     def check_folder_exists(self, folder_path: str) -> None:
         """Check if target folder exists, and create if it does not."""

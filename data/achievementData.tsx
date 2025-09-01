@@ -10,7 +10,16 @@ export const allAchievements = new Map<AchievementId, Achievement>([
             name: 'Sky Rider',
             description: 'Win with a multiplier of 10x or higher.',
             icon: (
-                <svg viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z"/></svg>
+                /* Rocket with cyan glow */
+                <svg
+                    className="w-6 h-6 text-cyan-300 drop-shadow-[0_0_8px_#22d3ee]"
+                    viewBox="0 0 24 24"
+                    fill="currentColor"
+                    xmlns="http://www.w3.org/2000/svg"
+                >
+                    <path d="M12 2c2.21 0 4 2.69 4 6 0 2.46-.83 4.71-2.05 6.15L14 17l-2-1-2 1-.05-2.85C8.83 12.71 8 10.46 8 8c0-3.31 1.79-6 4-6Zm0 18.5-2.5-1 .5 2L12 22l2-2.5.5-2-2.5 1Z" />
+                    <path d="M12 8l1.5 3h-3L12 8Z" />
+                </svg>
             )
         }
     ],
@@ -21,7 +30,17 @@ export const allAchievements = new Map<AchievementId, Achievement>([
             name: 'Roller',
             description: 'Bet 50 or more in a single round.',
             icon: (
-                 <svg viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path fillRule="evenodd" d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2Zm0 16a6 6 0 1 0 0-12 6 6 0 0 0 0 12Z" clipRule="evenodd"/></svg>
+                 /* Single casino chip */
+                 <svg
+                    className="w-6 h-6 text-cyan-300 drop-shadow-[0_0_8px_#22d3ee]"
+                    viewBox="0 0 24 24"
+                    fill="currentColor"
+                    xmlns="http://www.w3.org/2000/svg"
+                 >
+                    <circle cx="12" cy="12" r="8" stroke="currentColor" strokeWidth="2" fill="none" />
+                    <circle cx="12" cy="12" r="4" fill="currentColor" />
+                    <path d="M12 2v3M12 19v3M22 12h-3M5 12H2M17.657 6.343l-2.12 2.121M8.464 15.536l-2.12 2.121M17.657 17.657l-2.121-2.121M8.464 8.464l-2.12-2.121" stroke="currentColor" strokeWidth="1.5" />
+                 </svg>
             )
         }
     ],
@@ -32,7 +51,19 @@ export const allAchievements = new Map<AchievementId, Achievement>([
             name: 'Big Roller',
             description: 'Bet 200 or more in a single round.',
             icon: (
-                <svg viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M12 6a8 8 0 100 16 8 8 0 000-16zM12 4a8 8 0 100 16 8 8 0 000-16z" opacity=".6"/><path d="M12 2a8 8 0 100 16 8 8 0 000-16z"/></svg>
+                /* Stack of three chips */
+                <svg
+                    className="w-6 h-6 text-amber-300 drop-shadow-[0_0_8px_rgba(251,191,36,0.85)]"
+                    viewBox="0 0 24 24"
+                    fill="currentColor"
+                    xmlns="http://www.w3.org/2000/svg"
+                >
+                    <g transform="translate(0 2)">
+                        <ellipse cx="12" cy="4" rx="7" ry="3" />
+                        <ellipse cx="12" cy="9" rx="7" ry="3" />
+                        <ellipse cx="12" cy="14" rx="7" ry="3" />
+                    </g>
+                </svg>
             )
         }
     ],
@@ -43,7 +74,15 @@ export const allAchievements = new Map<AchievementId, Achievement>([
             name: 'High Roller',
             description: 'Bet 500 or more in a single round.',
             icon: (
-                <svg viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M5 16a8 8 0 1014 0 8 8 0 00-14 0z" opacity=".4"/><path d="M5 13a8 8 0 1014 0 8 8 0 00-14 0z" opacity=".6"/><path d="M5 10a8 8 0 1014 0 8 8 0 00-14 0z" opacity=".8"/><path d="M5 7a8 8 0 1014 0 8 8 0 00-14 0z"/><path d="M5 4.25l3-2.5 4 2.5 4-2.5 3 2.5V5H5v-.75z"/></svg>
+                /* Diamond icon */
+                <svg
+                    className="w-6 h-6 text-amber-300 drop-shadow-[0_0_10px_rgba(251,191,36,0.9)]"
+                    viewBox="0 0 24 24"
+                    fill="currentColor"
+                    xmlns="http://www.w3.org/2000/svg"
+                >
+                    <polygon points="12 2 22 12 12 22 2 12" />
+                </svg>
             )
         }
     ],
@@ -54,7 +93,16 @@ export const allAchievements = new Map<AchievementId, Achievement>([
             name: 'Elevator Jammer',
             description: 'Lose 5 rounds in a row.',
             icon: (
-                <svg viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path fillRule="evenodd" d="M12 22C6.477 22 2 17.523 2 12S6.477 2 12 2s10 4.477 10 10-4.477 10-10 10ZM10.586 12 7.757 9.172l1.415-1.415L12 10.586l2.828-2.829 1.415 1.415L13.414 12l2.829 2.828-1.415 1.415L12 13.414l-2.828 2.829-1.415-1.415L10.586 12Z" clipRule="evenodd"/></svg>
+                /* Broken elevator button */
+                <svg
+                    className="w-6 h-6 text-red-400 drop-shadow-[0_0_8px_rgba(239,68,68,0.8)]"
+                    viewBox="0 0 24 24"
+                    fill="currentColor"
+                    xmlns="http://www.w3.org/2000/svg"
+                >
+                    <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="2" fill="none" />
+                    <path d="M8 8l8 8M16 8l-8 8" stroke="currentColor" strokeWidth="2" />
+                </svg>
             )
         }
     ],
@@ -65,7 +113,17 @@ export const allAchievements = new Map<AchievementId, Achievement>([
             name: 'Lucky Lift',
             description: 'Win at exactly 2.00x three times in a row.',
             icon: (
-                <svg viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M14 10a2 2 0 11-4 0 2 2 0 014 0zm-4 4a2 2 0 100 4 2 2 0 000-4zm4 0a2 2 0 100 4 2 2 0 000-4zm4-4a2 2 0 100-4 2 2 0 000 4zM11 2v9h2V2h-2z"/></svg>
+                /* Elevator going up */
+                <svg
+                    className="w-6 h-6 text-cyan-300 drop-shadow-[0_0_8px_#22d3ee]"
+                    viewBox="0 0 24 24"
+                    fill="currentColor"
+                    xmlns="http://www.w3.org/2000/svg"
+                >
+                    <rect x="7" y="8" width="10" height="10" rx="2" />
+                    <path d="M12 6v4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                    <path d="M10 8l2-2 2 2" fill="currentColor" />
+                </svg>
             )
         }
     ],
@@ -76,7 +134,15 @@ export const allAchievements = new Map<AchievementId, Achievement>([
             name: 'Risk Taker',
             description: 'Win with a multiplier of 20x or higher.',
             icon: (
-                 <svg viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M12 2.5l-8 8 8 8 8-8-8-8zM4.9 11.4l7.1-7.1 7.1 7.1-7.1 7.1-7.1-7.1z"/></svg>
+                 /* Lightning bolt */
+                 <svg
+                    className="w-6 h-6 text-fuchsia-300 drop-shadow-[0_0_10px_rgba(168,85,247,0.85)]"
+                    viewBox="0 0 24 24"
+                    fill="currentColor"
+                    xmlns="http://www.w3.org/2000/svg"
+                 >
+                    <path d="M13 2 4 14h6l-1 8 9-12h-6l1-8Z" />
+                 </svg>
             )
         }
     ],
@@ -87,7 +153,17 @@ export const allAchievements = new Map<AchievementId, Achievement>([
             name: 'Precision Player',
             description: 'Win with a multiplier that exactly matches your target.',
             icon: (
-                <svg viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path fillRule="evenodd" d="M12 21a9 9 0 100-18 9 9 0 000 18zm0-4a5 5 0 100-10 5 5 0 000 10zm0-2a3 3 0 100-6 3 3 0 000 6zm0-2a1 1 0 100-2 1 1 0 000 2z" clipRule="evenodd"/></svg>
+                /* Crosshair */
+                <svg
+                    className="w-6 h-6 text-amber-300 drop-shadow-[0_0_8px_rgba(251,191,36,0.85)]"
+                    viewBox="0 0 24 24"
+                    fill="currentColor"
+                    xmlns="http://www.w3.org/2000/svg"
+                >
+                    <circle cx="12" cy="12" r="8" stroke="currentColor" strokeWidth="2" fill="none" />
+                    <circle cx="12" cy="12" r="3" fill="currentColor" />
+                    <path d="M12 2v3M12 19v3M22 12h-3M5 12H2" stroke="currentColor" strokeWidth="2" />
+                </svg>
             )
         }
     ]

@@ -58,7 +58,9 @@ class RgsApiClient {
         this.useMock =
             !authToken ||
             authToken === 'SESSION_TOKEN_FROM_STAKE_PLATFORM' ||
-            (/^https?:\/\//.test(rgsUrl) && rgsUrl.includes('rgs.stake-engine.com'));
+            !rgsUrl ||
+            rgsUrl.startsWith('http://localhost') ||
+            rgsUrl.startsWith('https://localhost');
 
         /* Prepare mock data */
         if (this.useMock) {
@@ -81,11 +83,23 @@ class RgsApiClient {
 
     /* --- Helpers --------------------------------------------------------- */
     private async sha256Hex(input: string): Promise<string> {
-        const data = new TextEncoder().encode(input);
-        const hashBuffer = await crypto.subtle.digest('SHA-256', data);
-        return Array.from(new Uint8Array(hashBuffer))
-            .map(b => b.toString(16).padStart(2, '0'))
-            .join('');
+        // Web Crypto is only available in secure contexts (https or localhost).
+        // When served from an insecure origin, `crypto.subtle` will be `undefined`.
+        // We fall back to a deterministic (but not cryptographically secure)
+        // padding/truncation so the rest of the game logic keeps working.
+        try {
+            if (typeof crypto !== 'undefined' && crypto.subtle) {
+                const data = new TextEncoder().encode(input);
+                const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+                return Array.from(new Uint8Array(hashBuffer))
+                    .map(b => b.toString(16).padStart(2, '0'))
+                    .join('');
+            }
+        } catch {
+            /* fall through to fallback */
+        }
+        // Fallback: repeat the input and pad with zeros to 64-hex-chars length
+        return (input + '0'.repeat(64)).slice(0, 64);
     }
 
     private async makeRequest<T>(endpoint: string, method: string = 'GET', body?: any): Promise<T> {

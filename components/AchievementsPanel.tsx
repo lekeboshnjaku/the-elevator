@@ -12,6 +12,27 @@ const AchievementsPanel: React.FC<AchievementsPanelProps> = ({ isOpen, onClose, 
     const achievementsList = Array.from(allAchievements.values());
     const closeButtonRef = useRef<HTMLButtonElement>(null);
 
+    /* ----------------------------------------------------------- */
+    /*              Theme helpers for neon border colors           */
+    /* ----------------------------------------------------------- */
+    const getTheme = (id: AchievementId) => {
+        switch (id) {
+            case AchievementId.SKY_RIDER:
+            case AchievementId.ROLLER:
+            case AchievementId.LUCKY_LIFT:
+                return { borderClass: 'neon-border-cyan', ringClass: 'ring-cyan-300' };
+            case AchievementId.BIG_ROLLER:
+            case AchievementId.HIGH_ROLLER:
+            case AchievementId.PRECISION_PLAYER:
+                return { borderClass: 'neon-border-gold', ringClass: 'ring-amber-300' };
+            case AchievementId.RISK_TAKER:
+                return { borderClass: 'neon-border-purple', ringClass: 'ring-fuchsia-300' };
+            case AchievementId.ELEVATOR_JAMMER:
+            default:
+                return { borderClass: 'neon-border-red', ringClass: 'ring-red-400' };
+        }
+    };
+
     useEffect(() => {
         if (isOpen) {
             const timer = setTimeout(() => closeButtonRef.current?.focus(), 100);
@@ -41,9 +62,23 @@ const AchievementsPanel: React.FC<AchievementsPanelProps> = ({ isOpen, onClose, 
                 onClick={(e) => e.stopPropagation()}
             >
                 <div className="flex justify-between items-center mb-4 flex-shrink-0">
-                    <h2 id="achievements-title" className="text-2xl font-bold text-white flex items-center gap-2">
-                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6 text-amber-400">
-                           <path fillRule="evenodd" d="M12 22C6.477 22 2 17.523 2 12S6.477 2 12 2s10 4.477 10 10-4.477 10-10 10ZM12 18a6 6 0 1 0 0-12 6 6 0 0 0 0 12Z" clipRule="evenodd" />
+                    <h2
+                        id="achievements-title"
+                        className="text-2xl font-black font-[Orbitron] text-white text-glow-cyan flex items-center gap-2"
+                    >
+                        {/* Neon medal / shield icon */}
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 24 24"
+                            className="w-6 h-6 text-cyan-300 drop-shadow-[0_0_6px_#22d3ee]"
+                            fill="currentColor"
+                        >
+                            <path d="M12 2 4 5v5c0 5.55 3.84 10.74 8 12 4.16-1.26 8-6.45 8-12V5l-8-3Z" />
+                            <path
+                                d="M12 13.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Z"
+                                className="text-amber-300"
+                                fill="currentColor"
+                            />
                         </svg>
                         Session Achievements
                     </h2>
@@ -64,15 +99,30 @@ const AchievementsPanel: React.FC<AchievementsPanelProps> = ({ isOpen, onClose, 
                         return (
                             <div
                                 key={ach.id}
-                                className={`flex items-center gap-4 bg-slate-900/50 p-3 rounded-lg border border-slate-700 transition-all duration-300 ${isUnlocked ? 'opacity-100' : 'opacity-40'}`}
+                                className={`relative flex items-center gap-4 neon-card-bg p-3 rounded-lg transition-all duration-300
+                                    ${isUnlocked ? `${getTheme(ach.id).borderClass} border animate-unlock-once` : 'border border-slate-700 grayscale opacity-40'}`}
                             >
-                                <div className={`flex-shrink-0 w-10 h-10 flex items-center justify-center rounded-full ${isUnlocked ? 'bg-amber-500/20 text-amber-400' : 'bg-slate-700 text-slate-500'}`}>
+                                <div
+                                    className={`flex-shrink-0 w-10 h-10 flex items-center justify-center rounded-full
+                                        ${isUnlocked ? `ring-2 ${getTheme(ach.id).ringClass} bg-slate-800/40` : 'bg-slate-700'}`}
+                                >
                                     <div className="w-6 h-6">{ach.icon}</div>
                                 </div>
                                 <div className="flex-grow">
                                     <h3 className={`font-bold ${isUnlocked ? 'text-white' : 'text-slate-400'}`}>{ach.name}</h3>
                                     <p className="text-sm text-slate-400">{ach.description}</p>
                                 </div>
+                                {/* Lock overlay for locked achievements */}
+                                {!isUnlocked && (
+                                    <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        viewBox="0 0 24 24"
+                                        className="absolute -top-1 -right-1 w-5 h-5 text-slate-500/60"
+                                        fill="currentColor"
+                                    >
+                                        <path d="M12 1a5 5 0 0 0-5 5v3H5.5A2.5 2.5 0 0 0 3 11.5v7A2.5 2.5 0 0 0 5.5 21h13a2.5 2.5 0 0 0 2.5-2.5v-7A2.5 2.5 0 0 0 18.5 9H17V6a5 5 0 0 0-5-5Zm-3 5a3 3 0 1 1 6 0v3H9V6Z" />
+                                    </svg>
+                                )}
                             </div>
                         );
                     })}

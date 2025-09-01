@@ -1,3 +1,14 @@
+import os
+import sys
+
+# ---------------------------------------------------------------------------
+# Ensure the local source tree takes precedence over any site-packages copy.
+# This prevents accidental import of the editable-installed `stakeengine`
+# version when we really want the in-repo `src` package.
+# ---------------------------------------------------------------------------
+BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
+sys.path.insert(0, BASE_DIR)
+
 """Main file for generating results for sample lines-pay game."""
 
 from gamestate import GameState

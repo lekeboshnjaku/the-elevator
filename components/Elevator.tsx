@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { GameStatus, HistoryEntry } from '../types';
 import { ANIMATION_DURATION } from '../constants';
-import { audioService } from '../services/audioService';
+import { audioService } from '../src/services/audioService';
 import ElevatorCharacter from './ElevatorCharacter';
 
 // Inlined sub-component for visual detail
@@ -41,16 +41,24 @@ const Elevator: React.FC<ElevatorProps> = ({
   useEffect(() => {
     if (gameStatus === GameStatus.PLAYING && !isInstantBet) {
       let frameId: number;
+      // Start rising synth tone
+      audioService.startRiseTone();
       const start = performance.now();
       const loop = (now: number) => {
         const elapsed = now - start;
         const pct = Math.min(1, elapsed / animationDuration);
         setProgress(pct);
+        audioService.updateRiseToneProgress(pct);
         if (pct < 1) frameId = requestAnimationFrame(loop);
       };
       frameId = requestAnimationFrame(loop);
-      return () => cancelAnimationFrame(frameId);
+      return () => {
+        cancelAnimationFrame(frameId);
+        audioService.stopRiseTone();
+      };
     } else {
+      // Ensure tone is stopped when not playing
+      audioService.stopRiseTone();
       setProgress(0); // reset when not playing / instant
     }
   }, [gameStatus, isInstantBet, animationDuration]);
@@ -84,7 +92,6 @@ const Elevator: React.FC<ElevatorProps> = ({
 
         {/* Elevator Body */}
         <div className={`${elevatorBodyBaseClasses} w-44 sm:w-64 lg:w-80 xl:w-96 h-full`}>
-            <div className="absolute inset-x-0 -top-2 h-4 bg-slate-700 elevator-cables"></div>
             {/* Elevator Interior */}
             <div className="absolute inset-2 bg-slate-800 rounded-t-md overflow-hidden border border-black/50 grated-floor">
                 <div className="absolute inset-0 bg-gradient-to-b from-slate-600 to-slate-800 opacity-80"></div>
@@ -133,60 +140,12 @@ const Elevator: React.FC<ElevatorProps> = ({
                 <div className="absolute top-1/2 left-0 w-2 h-1/2 bg-slate-800/50 rounded-full -translate-y-1/2 shadow-lg"></div>
                 </div>
             </div>
-        </div>
 
-        {/* Left Rail */}
-        <div
-            className="absolute top-1/2 -translate-y-1/2 h-3/4 md:h-4/5 w-3 sm:w-4 lg:w-5 bg-slate-900/60 rounded-sm border border-slate-800/80 shadow-md
-                       flex flex-col items-center justify-between py-2
-                       -left-4 sm:-left-4 lg:-left-5">
-            {Array.from({ length: 5 }).map((_, i) => {
-                const totalLights = 5;
-                const activeLights = Math.min(
-                    totalLights,
-                    Math.max(0, Math.floor(progress * totalLights))
-                );
-                const illuminated =
-                    gameStatus === GameStatus.PLAYING &&
-                    !isInstantBet &&
-                    i >= totalLights - activeLights;
-                const cls = illuminated
-                    ? 'bg-orange-400 shadow-[0_0_10px_3px_rgba(251,146,60,0.7)] animate-orange-pulse-glow'
-                    : 'bg-orange-900/30';
-                return (
-                    <div
-                        key={`left-${i}`}
-                        className={`w-1.5 h-4 rounded-[2px] ${cls}`}
-                    ></div>
-                );
-            })}
-        </div>
-
-        {/* Right Rail */}
-        <div
-            className="absolute top-1/2 -translate-y-1/2 h-3/4 md:h-4/5 w-3 sm:w-4 lg:w-5 bg-slate-900/60 rounded-sm border border-slate-800/80 shadow-md
-                       flex flex-col items-center justify-between py-2
-                       -right-4 sm:-right-4 lg:-right-5">
-            {Array.from({ length: 5 }).map((_, i) => {
-                const totalLights = 5;
-                const activeLights = Math.min(
-                    totalLights,
-                    Math.max(0, Math.floor(progress * totalLights))
-                );
-                const illuminated =
-                    gameStatus === GameStatus.PLAYING &&
-                    !isInstantBet &&
-                    i >= totalLights - activeLights;
-                const cls = illuminated
-                    ? 'bg-orange-400 shadow-[0_0_10px_3px_rgba(251,146,60,0.7)] animate-orange-pulse-glow'
-                    : 'bg-orange-900/30';
-                return (
-                    <div
-                        key={`right-${i}`}
-                        className={`w-1.5 h-4 rounded-[2px] ${cls}`}
-                    ></div>
-                );
-            })}
+            {/* Left Light Bar */}
+            <div className="absolute top-1/2 -translate-y-1/2 -left-8 h-3/4 w-2 rounded-full bg-cyan-300 shadow-[0_0_16px_4px_rgba(34,211,238,0.45)]"></div>
+            
+            {/* Right Light Bar */}
+            <div className="absolute top-1/2 -translate-y-1/2 -right-8 h-3/4 w-2 rounded-full bg-cyan-300 shadow-[0_0_16px_4px_rgba(34,211,238,0.45)]"></div>
         </div>
     </div>
   );

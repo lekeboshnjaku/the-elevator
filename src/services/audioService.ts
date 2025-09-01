@@ -32,6 +32,10 @@ class AudioService {
         padGain: GainNode;
     } | null = null;
 
+    // --- Multiplier Rising Tone ---
+    private riseToneOsc: OscillatorNode | null = null;
+    private riseToneGain: GainNode | null = null;
+
     // --- Beat-Synced Speech Properties ---
     public bpm = 120;
     private speechQueue: { text: string, highPriority: boolean, onEnd?: () => void }[] = [];
@@ -594,6 +598,60 @@ class AudioService {
         harmonicOsc.stop(now + 0.7);
     }
 
+    /* ------------------------------------------------------------------ */
+    /*         Rising Futuristic Tone (called while multiplier climbs)    */
+    /* ------------------------------------------------------------------ */
+
+    public startRiseTone = () => {
+        if (!this.audioContext || !this.masterGain) return;
+        this.resumeContext();
+        if (this.riseToneOsc) return; // already running
+
+        const now = this.audioContext.currentTime;
+        const osc = this.audioContext.createOscillator();
+        const gain = this.audioContext.createGain();
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(200, now); // start low
+        gain.gain.setValueAtTime(0.0001, now);
+        gain.gain.exponentialRampToValueAtTime(0.03, now + 0.05);
+        osc.connect(gain);
+        gain.connect(this.masterGain);
+        osc.start(now);
+        this.riseToneOsc = osc;
+        this.riseToneGain = gain;
+    }
+
+    public updateRiseToneProgress = (pct: number) => {
+        if (!this.audioContext || !this.riseToneOsc || !this.riseToneGain) return;
+        const now = this.audioContext.currentTime;
+        const clamped = Math.max(0, Math.min(1, pct));
+        const freq = 200 + clamped * 2000; // 200Hz ➜ 2200Hz
+        const gainValue = 0.03 + clamped * 0.09; // subtle increase
+        this.riseToneOsc.frequency.cancelScheduledValues(now);
+        this.riseToneOsc.frequency.linearRampToValueAtTime(freq, now + 0.05);
+        this.riseToneGain.gain.cancelScheduledValues(now);
+        this.riseToneGain.gain.linearRampToValueAtTime(gainValue, now + 0.05);
+    }
+
+    public stopRiseTone = () => {
+        if (!this.audioContext || !this.riseToneOsc || !this.riseToneGain) return;
+        const now = this.audioContext.currentTime;
+        this.riseToneGain.gain.cancelScheduledValues(now);
+        this.riseToneGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.08);
+
+        // Capture references before nulling
+        const osc = this.riseToneOsc;
+        const gain = this.riseToneGain;
+        this.riseToneOsc = null;
+        this.riseToneGain = null;
+
+        setTimeout(() => {
+            try { osc.stop(); } catch {}
+            try { osc.disconnect(); } catch {}
+            try { gain.disconnect(); } catch {}
+        }, 90);
+    }
+
     public playCellphoneBeep = () => {
         if (!this.audioContext || !this.masterGain) return;
         this.resumeContext();
@@ -624,29 +682,35 @@ class AudioService {
         if (!this.audioContext || !this.masterGain) return;
         this.resumeContext();
         const now = this.audioContext.currentTime;
-        const noise = this.audioContext.createBufferSource();
-        const bufferSize = this.audioContext.sampleRate * 0.1;
+
+        /* THUD PART (sine-sweep kick) */
+        const kickOsc = this.audioContext.createOscillator();
+        const kickGain = this.audioContext.createGain();
+        kickOsc.type = 'sine';
+        kickOsc.frequency.setValueAtTime(120, now);
+        kickOsc.frequency.exponentialRampToValueAtTime(40, now + 0.12);
+        kickGain.gain.setValueAtTime(0.001, now);
+        kickGain.gain.exponentialRampToValueAtTime(0.9, now + 0.005);
+        kickGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.14);
+        kickOsc.connect(kickGain);
+        kickGain.connect(this.masterGain);
+        kickOsc.start(now);
+        kickOsc.stop(now + 0.15);
+
+        /* CLICK PART (adds definition) */
+        const clickNoise = this.audioContext.createBufferSource();
+        const bufferSize = this.audioContext.sampleRate * 0.04;
         const buffer = this.audioContext.createBuffer(1, bufferSize, this.audioContext.sampleRate);
         const data = buffer.getChannelData(0);
-        for (let i = 0; i < bufferSize; i++) {
-            data[i] = Math.random() * 2 - 1;
-        }
-        noise.buffer = buffer;
-
-        const bandpass = this.audioContext.createBiquadFilter();
-        bandpass.type = 'bandpass';
-        bandpass.frequency.value = 1500;
-        bandpass.Q.value = 10;
-        
-        const gain = this.audioContext.createGain();
-        gain.gain.setValueAtTime(0.4, now);
-        gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.08);
-        
-        noise.connect(bandpass);
-        bandpass.connect(gain);
-        gain.connect(this.masterGain);
-        noise.start(now);
-        noise.stop(now + 0.1);
+        for (let i = 0; i < bufferSize; i++) data[i] = Math.random() * 2 - 1;
+        clickNoise.buffer = buffer;
+        const clickGain = this.audioContext.createGain();
+        clickGain.gain.setValueAtTime(0.25, now);
+        clickGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.04);
+        clickNoise.connect(clickGain);
+        clickGain.connect(this.masterGain);
+        clickNoise.start(now);
+        clickNoise.stop(now + 0.05);
     }
 
     public playDoorOpenSound = () => {

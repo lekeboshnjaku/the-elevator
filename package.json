@@ -7,7 +7,7 @@
     "start": "esbuild index.tsx --bundle --outfile=dist/bundle.js --sourcemap --serve=8000 --servedir=.",
     "build": "esbuild index.tsx --bundle --outfile=dist/bundle.js --minify",
     "typecheck": "tsc --noEmit",
-    "build:math": "math_sdk_project\\env\\Scripts\\python.exe math_sdk_project\\games\\fifty_fifty\\run.py"
+    "build:math": "math_sdk_project\\env\\Scripts\\python.exe math_sdk_project\\games\\limbo_game\\run.py"
   },
   "dependencies": {
     "@fontsource/anton": "^5.2.6",

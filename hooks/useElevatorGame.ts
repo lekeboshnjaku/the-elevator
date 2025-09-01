@@ -1,7 +1,7 @@
 import { useState, useCallback, useMemo, useRef, useEffect } from 'react';
 import { GameStatus, HistoryEntry, AutoBetSettings, AutoBetAction, CurrencyConfig, ApiError, AchievementId, Achievement } from '../types';
-import { rgsApiService } from '../services/rgsApiService';
-import { audioService } from '../services/audioService';
+import { rgsApiService } from '../src/services/rgsApiService';
+import { audioService } from '../src/services/audioService';
 import { aiService } from '../services/aiService';
 import { MAX_MULTIPLIER } from '../constants';
 import { allAchievements } from '../data/achievementData';

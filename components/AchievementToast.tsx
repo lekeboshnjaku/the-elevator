@@ -40,13 +40,13 @@ const AchievementToast: React.FC<AchievementToastProps> = ({ achievement, onClos
                 .animate-toast-out { animation: toast-slide-out 0.5s cubic-bezier(0.55, 0.085, 0.68, 0.53) forwards; }
             `}</style>
             <div
-                className={`bg-slate-800/80 backdrop-blur-md rounded-lg shadow-2xl border border-amber-400/50 p-4 w-full max-w-sm flex items-center gap-4 overflow-hidden ${isVisible ? 'animate-toast-in' : 'animate-toast-out'}`}
+                className={`bg-slate-800/80 backdrop-blur-md rounded-lg shadow-2xl border border-amber-400/50 p-4 w-full max-w-sm grid grid-cols-[auto,1fr] items-center gap-4 overflow-hidden ${isVisible ? 'animate-toast-in' : 'animate-toast-out'}`}
                 role="alert"
             >
-                <div className="flex-shrink-0 w-12 h-12 flex items-center justify-center rounded-full bg-amber-500/20 text-amber-400">
-                    <div className="w-8 h-8">{achievement.icon}</div>
+                <div className="flex-shrink-0 w-12 h-12 p-1.5 self-center grid place-items-center rounded-full toast-icon bg-amber-500/20 text-amber-400">
+                    <div className="w-7 h-7 grid place-items-center">{achievement.icon}</div>
                 </div>
-                <div className="flex-grow">
+                <div className="flex-grow self-center">
                     <h3 className="font-bold text-amber-300">Achievement Unlocked!</h3>
                     <p className="text-sm text-white">{achievement.name}</p>
                 </div>

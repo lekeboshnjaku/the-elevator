@@ -241,6 +241,18 @@ const App: React.FC = () => {
         }
     }, [game.gameStatus]);
 
+    /* ------------------------------------------------------------------ */
+    /*                Bet-start thud (manual, auto, programmatic)        */
+    /* ------------------------------------------------------------------ */
+    const prevStatusRef = useRef<GameStatus>(GameStatus.IDLE);
+    useEffect(() => {
+        if (prevStatusRef.current !== GameStatus.PLAYING &&
+            game.gameStatus === GameStatus.PLAYING) {
+            audioService.playBetSound();
+        }
+        prevStatusRef.current = game.gameStatus;
+    }, [game.gameStatus]);
+
     // Effect for ARIA live region announcements for accessibility
     useEffect(() => {
         if (game.gameStatus === GameStatus.WON && game.lastResult) {

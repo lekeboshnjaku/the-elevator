@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { GameStatus, AutoBetSettings, AutoBetAction, HistoryEntry } from '../types';
 import HistoryBar from './HistoryBar';
 import { HOUSE_EDGE } from '../constants';
+import { audioService } from '../src/services/audioService';
 
 interface ControlsProps {
   betAmount: string;
@@ -179,14 +180,19 @@ const Controls: React.FC<ControlsProps> = (props) => {
   const handleMainButtonClick = () => {
     if (isAutoBetting) {
         stopAutoBet();
-    } else if (activeTab === 'manual') {
-        placeBet();
-    } else { // activeTab === 'auto'
-        const fullSettings: AutoBetSettings = {
-            ...autoSettings,
-            baseBet: parseFloat(betAmount),
-        };
-        startAutoBet(fullSettings);
+    } else {
+        // Play deep thud when a new bet is initiated
+        audioService.playBetSound();
+
+        if (activeTab === 'manual') {
+            placeBet();
+        } else { // activeTab === 'auto'
+            const fullSettings: AutoBetSettings = {
+                ...autoSettings,
+                baseBet: parseFloat(betAmount),
+            };
+            startAutoBet(fullSettings);
+        }
     }
   };
 
