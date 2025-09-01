@@ -30,7 +30,7 @@ interface ControlsProps {
 const TabButton: React.FC<{ active: boolean; onClick: () => void; children: React.ReactNode }> = ({ active, onClick, children }) => (
     <button
         onClick={onClick}
-        className={`w-full py-2.5 text-sm font-bold uppercase tracking-wider transition-all relative px-3 text-center ${
+        className={`inline-flex py-2.5 text-sm font-bold uppercase tracking-wider transition-all relative px-3 text-center ${
             active ? 'text-sky-400' : 'text-slate-500 hover:text-sky-300'
         }`}
     >
@@ -212,11 +212,9 @@ const Controls: React.FC<ControlsProps> = (props) => {
     <div className="w-full flex flex-col gap-4">
         <div className="w-full bg-gradient-to-b from-black/60 to-black/40 rounded-xl shadow-2xl border border-slate-700/80">
             <div className="flex justify-between items-center border-b-2 border-slate-950/50">
-                <div className="relative grid grid-cols-2 flex-1 gap-3 px-2">
+                <div className="relative flex items-center flex-1 gap-4 pl-3">
                     <TabButton active={activeTab === 'manual'} onClick={() => setActiveTab('manual')}>{t('manual')}</TabButton>
                     <TabButton active={activeTab === 'auto'} onClick={() => setActiveTab('auto')}>{t('auto')}</TabButton>
-                    {/* vertical divider */}
-                    <div className="pointer-events-none absolute top-2 bottom-2 left-1/2 -translate-x-1/2 w-px bg-slate-700/60"></div>
                 </div>
                  <div className="flex items-center gap-4 pr-4">
                     <IconButton onClick={props.toggleInstantBet} title="Toggle Instant Bet">
