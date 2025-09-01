@@ -77,7 +77,7 @@ const ManualBetPanel: React.FC<Pick<ControlsProps, 'betAmount' | 'setBetAmount' 
                 <div className="relative">
                     <span className="absolute left-3 top-1 text-xs text-slate-400 uppercase tracking-wider">{props.t('winChance')}</span>
                     <div className="w-full bg-slate-950/50 rounded-md pt-5 pb-2 sm:pt-7 sm:pb-3 px-3 text-white font-mono text-sm sm:text-lg transition-all duration-300 border border-slate-700 shadow-inner h-full flex items-center">
-                        <span>{winChance.toFixed(4)}%</span>
+                        <span className="text-green-400 text-glow-green font-bold">{winChance.toFixed(4)}%</span>
                     </div>
                 </div>
              </div>
@@ -212,9 +212,11 @@ const Controls: React.FC<ControlsProps> = (props) => {
     <div className="w-full flex flex-col gap-4">
         <div className="w-full bg-gradient-to-b from-black/60 to-black/40 rounded-xl shadow-2xl border border-slate-700/80">
             <div className="flex justify-between items-center border-b-2 border-slate-950/50">
-                <div className="grid grid-cols-2 w-1/2">
+                <div className="relative grid grid-cols-2 flex-1">
                     <TabButton active={activeTab === 'manual'} onClick={() => setActiveTab('manual')}>{t('manual')}</TabButton>
                     <TabButton active={activeTab === 'auto'} onClick={() => setActiveTab('auto')}>{t('auto')}</TabButton>
+                    {/* vertical divider */}
+                    <div className="pointer-events-none absolute top-2 bottom-2 left-1/2 -translate-x-1/2 w-px bg-slate-700/60"></div>
                 </div>
                  <div className="flex items-center gap-4 pr-4">
                     <IconButton onClick={props.toggleInstantBet} title="Toggle Instant Bet">
