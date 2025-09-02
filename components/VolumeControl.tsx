@@ -8,7 +8,8 @@ interface VolumeControlProps {
 
 const VolumeControl: React.FC<VolumeControlProps> = ({ volume, onVolumeChange }) => {
     const backgroundStyle = {
-        background: `linear-gradient(to right, #facc15 ${volume * 100}%, #1e293b ${volume * 100}%)`
+        // Filled portion uses Tailwind sky-500, remainder uses very dark slate
+        background: `linear-gradient(to right, #0ea5e9 ${volume * 100}%, #0f172a ${volume * 100}%)`
     };
 
     return (
@@ -29,19 +30,27 @@ const VolumeControl: React.FC<VolumeControlProps> = ({ volume, onVolumeChange })
                     appearance: none;
                     width: 16px;
                     height: 16px;
-                    background: #fde047; /* amber-200 */
+                    background: #0ea5e9; /* sky-500 */
                     cursor: pointer;
                     border-radius: 50%;
-                    border: 2px solid #facc15; /* amber-400 */
+                    border: 2px solid #0369a1; /* sky-700 */
+                    box-shadow: 0 0 8px rgba(14,165,233,0.6);
                 }
 
                 input[type=range].volume-slider::-moz-range-thumb {
                     width: 16px;
                     height: 16px;
-                    background: #fde047; /* amber-200 */
+                    background: #0ea5e9; /* sky-500 */
                     cursor: pointer;
                     border-radius: 50%;
-                    border: 2px solid #facc15; /* amber-400 */
+                    border: 2px solid #0369a1; /* sky-700 */
+                    box-shadow: 0 0 8px rgba(14,165,233,0.6);
+                }
+
+                /* Keyboard focus outline */
+                input[type=range].volume-slider:focus-visible {
+                    outline: 2px solid #0ea5e9;
+                    outline-offset: 2px;
                 }
             `}</style>
             <input
