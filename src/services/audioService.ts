@@ -689,20 +689,6 @@ class AudioService {
         const now = this.audioContext.currentTime;
         const duration = 0.4;
 
-        // Small servo chirp
-        const chirpOsc = this.audioContext.createOscillator();
-        const chirpGain = this.audioContext.createGain();
-        chirpOsc.type = 'sine';
-        chirpOsc.frequency.setValueAtTime(2500, now);
-        chirpOsc.frequency.exponentialRampToValueAtTime(1500, now + 0.05);
-        chirpGain.gain.setValueAtTime(0, now);
-        chirpGain.gain.linearRampToValueAtTime(0.2, now + 0.01);
-        chirpGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.05);
-        chirpOsc.connect(chirpGain);
-        chirpGain.connect(this.masterGain);
-        chirpOsc.start(now);
-        chirpOsc.stop(now + 0.05);
-
         // Low hum
         const humOsc1 = this.audioContext.createOscillator();
         const humOsc2 = this.audioContext.createOscillator();
@@ -942,7 +928,7 @@ class AudioService {
             bassGain.gain.exponentialRampToValueAtTime(0.001, time + stepDuration * 0.9);
 
             // --- Drums ---
-            if (currentStep % 4 === 0) playKick(time);
+            // Removed kick sound per user request
             if (currentStep % 8 === 4) playSnare(time);
             if (currentStep % 2 !== 0) playHiHat(time);
 

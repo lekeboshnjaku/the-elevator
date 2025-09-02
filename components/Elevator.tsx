@@ -41,24 +41,19 @@ const Elevator: React.FC<ElevatorProps> = ({
   useEffect(() => {
     if (gameStatus === GameStatus.PLAYING && !isInstantBet) {
       let frameId: number;
-      // Start rising synth tone
-      audioService.startRiseTone();
       const start = performance.now();
       const loop = (now: number) => {
         const elapsed = now - start;
         const pct = Math.min(1, elapsed / animationDuration);
         setProgress(pct);
-        audioService.updateRiseToneProgress(pct);
         if (pct < 1) frameId = requestAnimationFrame(loop);
       };
       frameId = requestAnimationFrame(loop);
       return () => {
         cancelAnimationFrame(frameId);
-        audioService.stopRiseTone();
       };
     } else {
       // Ensure tone is stopped when not playing
-      audioService.stopRiseTone();
       setProgress(0); // reset when not playing / instant
     }
   }, [gameStatus, isInstantBet, animationDuration]);
