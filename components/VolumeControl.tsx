@@ -8,8 +8,8 @@ interface VolumeControlProps {
 
 const VolumeControl: React.FC<VolumeControlProps> = ({ volume, onVolumeChange }) => {
     const backgroundStyle = {
-        // Filled portion uses Tailwind sky-500, remainder uses very dark slate
-        background: `linear-gradient(to right, #0ea5e9 ${volume * 100}%, #0f172a ${volume * 100}%)`
+        // Filled portion uses neon accent then fades into dark-teal
+        background: `linear-gradient(to right, var(--accent) ${volume * 100}%, rgba(12,31,46,0.8) ${volume * 100}%)`
     };
 
     return (
@@ -30,26 +30,26 @@ const VolumeControl: React.FC<VolumeControlProps> = ({ volume, onVolumeChange })
                     appearance: none;
                     width: 16px;
                     height: 16px;
-                    background: #0ea5e9; /* sky-500 */
+                    background: var(--accent);
                     cursor: pointer;
                     border-radius: 50%;
-                    border: 2px solid #0369a1; /* sky-700 */
-                    box-shadow: 0 0 8px rgba(14,165,233,0.6);
+                    border: 2px solid #005e66; /* darker teal */
+                    box-shadow: 0 0 8px rgba(0,246,255,0.65);
                 }
 
                 input[type=range].volume-slider::-moz-range-thumb {
                     width: 16px;
                     height: 16px;
-                    background: #0ea5e9; /* sky-500 */
+                    background: var(--accent);
                     cursor: pointer;
                     border-radius: 50%;
-                    border: 2px solid #0369a1; /* sky-700 */
-                    box-shadow: 0 0 8px rgba(14,165,233,0.6);
+                    border: 2px solid #005e66; /* darker teal */
+                    box-shadow: 0 0 8px rgba(0,246,255,0.65);
                 }
 
                 /* Keyboard focus outline */
                 input[type=range].volume-slider:focus-visible {
-                    outline: 2px solid #0ea5e9;
+                    outline: 2px solid var(--accent);
                     outline-offset: 2px;
                 }
             `}</style>

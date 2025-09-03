@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { GameStatus, AutoBetSettings, AutoBetAction, HistoryEntry } from '../types';
 import HistoryBar from './HistoryBar';
 import { HOUSE_EDGE } from '../constants';
-import { audioService } from '../src/services/audioService';
 
 interface ControlsProps {
   betAmount: string;
@@ -31,12 +30,21 @@ interface ControlsProps {
 const TabButton: React.FC<{ active: boolean; onClick: () => void; children: React.ReactNode }> = ({ active, onClick, children }) => (
     <button
         onClick={onClick}
-        className={`inline-flex py-2.5 text-sm font-bold uppercase tracking-wider transition-all relative px-3 text-center ${
-            active ? 'text-sky-400' : 'text-slate-500 hover:text-sky-300'
-        }`}
+        className={`inline-flex py-2.5 text-sm font-bold uppercase tracking-wider transition-all relative px-3 text-center`}
+        style={{
+            color: active ? 'var(--accent)' : 'var(--neutral)',
+        }}
     >
         {children}
-        {active && <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-sky-400 shadow-[0_0_8px_0_#38bdf8]"></div>}
+        {active && (
+            <div
+                className="absolute bottom-0 left-0 right-0 h-0.5"
+                style={{
+                    background: 'var(--accent)',
+                    boxShadow: '0 0 8px var(--accent)',
+                }}
+            ></div>
+        )}
     </button>
 );
 
@@ -213,13 +221,13 @@ const Controls: React.FC<ControlsProps> = (props) => {
 
   return (
     <div className="w-full flex flex-col gap-4">
-        <div className="w-full bg-gradient-to-b from-black/60 to-black/40 rounded-xl shadow-2xl border border-slate-700/80">
+        <div className="w-full glass-panel rounded-lg">
             <div className="flex justify-between items-center border-b-2 border-slate-950/50">
                 <div className="relative flex items-center flex-1 gap-4 pl-3">
                     <TabButton active={activeTab === 'manual'} onClick={() => setActiveTab('manual')}>{t('manual')}</TabButton>
                     <TabButton active={activeTab === 'auto'} onClick={() => setActiveTab('auto')}>{t('auto')}</TabButton>
                 </div>
-                 <div className="flex items-center gap-4 pr-3">
+                 <div className="flex items-center gap-4 pr-3 py-2.5">
                     <IconButton onClick={props.toggleInstantBet} title="Toggle Instant Bet">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className={`w-5 h-5 transition-colors ${props.isInstantBet ? 'text-sky-400' : 'text-slate-500 group-hover:text-slate-300'}`}>
                             <path d="M11.983 1.904a.75.75 0 0 0-1.292-.904l-7.25 10.5a.75.75 0 0 0 .644 1.25h3.322l-2.305 4.5a.75.75 0 0 0 1.292.904l7.25-10.5a.75.75 0 0 0-.644-1.25h-3.322l2.305-4.5Z" />
@@ -227,7 +235,7 @@ const Controls: React.FC<ControlsProps> = (props) => {
                     </IconButton>
                     {/* Rules + Fairness grouped for consistent spacing */}
                     <div className="flex items-center gap-2">
-                        <button onClick={props.openRules} className="text-xs text-slate-400 hover:text-white uppercase tracking-wider">{t('rules')}</button>
+                        <button onClick={props.openRules} className="text-sm font-bold text-slate-400 hover:text-white uppercase tracking-wider">{t('rules')}</button>
                         <IconButton onClick={props.toggleFairness} title="Provably Fair">
                         <svg
                             xmlns="http://www.w3.org/2000/svg"
@@ -235,7 +243,7 @@ const Controls: React.FC<ControlsProps> = (props) => {
                             fill="none"
                             stroke="currentColor"
                             strokeWidth="1.8"
-                            className="w-5 h-5 text-slate-400 transition-colors group-hover:text-sky-400 drop-shadow-[0_0_6px_rgba(56,189,248,0.35)] hover:drop-shadow-[0_0_12px_rgba(56,189,248,0.6)] align-middle relative top-[1px]"
+                            className="w-5 h-5 text-slate-400 transition-colors group-hover:text-sky-400 drop-shadow-[0_0_6px_rgba(56,189,248,0.35)] hover:drop-shadow-[0_0_12px_rgba(56,189,248,0.6)] align-middle"
                         >
                             <path
                                 strokeLinecap="round"
@@ -254,16 +262,49 @@ const Controls: React.FC<ControlsProps> = (props) => {
                 ) : (
                     <AutoBetPanel settings={autoSettings} setSettings={setAutoSettings} isAutoBetting={isAutoBetting} />
                 )}
+
+                {/* Turbo / Instant toggle button */}
+                <div className="flex justify-end">
+                    <button
+                        onClick={props.toggleInstantBet}
+                        title="Turbo Mode"
+                        className={`w-10 h-10 sm:w-11 sm:h-11 rounded-full flex items-center justify-center border transition-all duration-300
+                            ${props.isInstantBet
+                                ? 'animate-blue-pulse-glow neon border-[var(--accent)] bg-[rgba(0,246,255,0.15)] text-[var(--accent)] shadow-[0_0_14px_rgba(0,246,255,0.45)_inset,0_0_18px_rgba(0,246,255,0.35)]'
+                                : 'border-slate-600 bg-slate-800/40 hover:bg-slate-700/40 text-slate-300'}
+                        `}
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 24 24"
+                            className="w-4 h-4 sm:w-5 sm:h-5"
+                            fill="none"
+                            stroke="url(#boltGradient)"
+                            strokeWidth="1.8"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                        >
+                            <defs>
+                                <linearGradient id="boltGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                                    <stop offset="0%" stopColor="#e5e7eb" />
+                                    <stop offset="50%" stopColor="#9ca3af" />
+                                    <stop offset="100%" stopColor="#6b7280" />
+                                </linearGradient>
+                            </defs>
+                            <path d="M13 2 3 14h7l-1 8 10-12h-7l1-8z" />
+                        </svg>
+                    </button>
+                </div>
                 
                 <button
                     onClick={handleMainButtonClick}
                     disabled={isButtonDisabled()}
-                    className={`w-full py-1.5 sm:py-3 lg:py-5 rounded-xl text-sm sm:text-xl font-bold uppercase tracking-wider sm:tracking-widest transition-all duration-300 transform
+                    className={`w-full py-1.5 sm:py-3 lg:py-5 text-sm sm:text-xl font-bold uppercase tracking-wider sm:tracking-widest transition-all duration-300 transform
                     ${isButtonDisabled()
                         ? 'bg-slate-700 text-slate-500 cursor-not-allowed border-b-4 border-slate-800'
                         : isAutoBetting
                             ? 'bg-gradient-to-b from-red-500 to-red-700 text-white hover:from-red-400 hover:to-red-600 active:scale-[0.98] border-b-4 border-red-900 shadow-lg shadow-red-600/30'
-                            : 'bg-gradient-to-b from-sky-500 to-sky-700 text-white hover:from-sky-400 hover:to-sky-600 active:scale-[0.98] border-b-4 border-sky-900 shadow-lg shadow-sky-600/30 rounded-xl'
+                            : 'hero-button'
                     } ${mainButtonAnimation}`}
                 >
                     {getButtonText()}

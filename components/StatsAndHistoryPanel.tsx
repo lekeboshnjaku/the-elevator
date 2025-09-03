@@ -56,16 +56,16 @@ const StatsAndHistoryPanel: React.FC<StatsAndHistoryPanelProps> = ({ history, se
         ? Math.max(...history.map(entry => entry.multiplier))
         : 0;
 
-    const profitColor = sessionProfit > 0 ? 'text-green-400' : sessionProfit < 0 ? 'text-red-500' : 'text-slate-300';
+    const profitColor = sessionProfit > 0 ? 'success' : sessionProfit < 0 ? 'loss' : 'text-slate-300';
 
     return (
-        <div className="relative w-full bg-gradient-to-b from-black/60 to-black/40 rounded-xl shadow-2xl p-3 space-y-4 border animate-cyan-pulse-border">
+        <div className="relative w-full glass-panel rounded-lg p-3 space-y-4 animate-cyan-pulse-border">
              <div className="absolute inset-0 bg-black/10 rounded-xl overflow-hidden pointer-events-none">
                 {/* Scanline effect */}
                 <div className="absolute inset-0" style={{background: 'repeating-linear-gradient(0deg, rgba(0,0,0,0.3) 0, rgba(0,0,0,0.3) 1px, transparent 1px, transparent 3px)'}}></div>
             </div>
             <div className="flex justify-between items-center border-b-2 border-slate-950/50 pb-2">
-                <h3 className="font-bold text-slate-300 text-md uppercase tracking-wider text-glow-cyan">Session Data</h3>
+                <h3 className="font-bold accent neon text-md uppercase tracking-wider" style={{fontFamily:'"Orbitron", sans-serif'}}>Session Data</h3>
                 {onClose && (
                      <button 
                         className="lg:hidden bg-slate-800/80 p-1 rounded-full text-white hover:bg-slate-700/80 active:scale-90 transition-all"

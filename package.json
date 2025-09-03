@@ -7,6 +7,7 @@
     "start": "esbuild index.tsx --bundle --outfile=dist/bundle.js --sourcemap --serve=8000 --servedir=.",
     "build": "esbuild index.tsx --bundle --outfile=dist/bundle.js --minify",
     "typecheck": "tsc --noEmit",
+    "type-check": "tsc --noEmit",
     "build:math": "math_sdk_project\\env\\Scripts\\python.exe math_sdk_project\\games\\limbo_game\\run.py"
   },
   "dependencies": {

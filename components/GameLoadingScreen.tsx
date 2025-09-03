@@ -8,7 +8,8 @@ import React from 'react';
 const GameLoadingScreen: React.FC<{ progress: number }> = ({ progress }) => {
     
     return (
-        <main className="relative flex flex-col min-h-screen w-full items-center justify-center overflow-hidden bg-black text-white p-4">
+        <>
+        <main className="relative flex flex-col min-h-screen w-full items-center justify-center overflow-hidden text-white p-4 bg-black">
             {/* This style block contains the keyframe animations for the liquid effect */}
             <style>{`
                 @keyframes move-liquid {
@@ -18,6 +19,7 @@ const GameLoadingScreen: React.FC<{ progress: number }> = ({ progress }) => {
                     75% { transform: translateX(-3px) translateY(3px) rotate(1deg) scale(1.0); }
                     100% { transform: translateX(0) translateY(0) rotate(0deg) scale(1.1); }
                 }
+
             `}</style>
             
             <div className="flex flex-col items-center gap-6 w-full max-w-md text-center">
@@ -34,6 +36,7 @@ const GameLoadingScreen: React.FC<{ progress: number }> = ({ progress }) => {
                              <clipPath id="o-clip">
                                 <circle cx="100" cy="100" r="50" />
                             </clipPath>
+
                         </defs>
                         
                         {/* The Ooze liquid, clipped by the circle path */}
@@ -47,7 +50,7 @@ const GameLoadingScreen: React.FC<{ progress: number }> = ({ progress }) => {
                                 y={200 - (progress * 2)} // Starts at bottom (200) and moves up to top (0)
                                 width="200" 
                                 height="200"
-                                fill="#a3e635" // The bright green ooze color
+                                fill="#a3e635"
                                 style={{
                                     filter: 'url(#liquid-distortion)',
                                     animation: 'move-liquid 8s ease-in-out infinite',
@@ -60,7 +63,7 @@ const GameLoadingScreen: React.FC<{ progress: number }> = ({ progress }) => {
                         {/* The "O" outline - drawn on top of the liquid */}
                         <circle 
                             cx="100" cy="100" r="50" 
-                            stroke="#a3e635" // lime-400
+                            stroke="#a3e635"
                             strokeWidth="8" 
                             fill="none" 
                         />
@@ -75,6 +78,7 @@ const GameLoadingScreen: React.FC<{ progress: number }> = ({ progress }) => {
                 </div>
             </div>
         </main>
+        </>
     );
 };
 
