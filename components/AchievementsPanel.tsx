@@ -75,13 +75,18 @@ const AchievementsPanel: React.FC<AchievementsPanelProps> = ({ isOpen, onClose, 
                             stroke="currentColor"
                             strokeWidth={1.8}
                         >
-                            {/* Hexagon outline */}
-                            <path
-                                d="M12 2l6.93 4v8l-6.93 4-6.93-4v-8L12 2z"
+                            {/* Regular hexagon outline */}
+                            <polygon
+                                points="12,2 20,7 20,17 12,22 4,17 4,7"
                                 fill="none"
                             />
-                            {/* Star */}
-                            <path d="M12 8.5l1.45 2.94 3.25.47-2.35 2.3.55 3.23-2.9-1.53-2.9 1.53.55-3.23-2.35-2.3 3.25-.47L12 8.5z" />
+                            {/* Centered star scaled to fit inside hexagon */}
+                            <g transform="translate(0,0) scale(0.82) translate(2.16,2.16)">
+                                <path
+                                    d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"
+                                    fill="currentColor"
+                                />
+                            </g>
                         </svg>
                         Session Achievements
                     </h2>

@@ -20,6 +20,19 @@ const achievementAnnouncements: Record<AchievementId, string> = {
 
 
 export const useElevatorGame = (isInstantBet: boolean) => {
+  /* ------------------------------------------------------------------ */
+  /*  One-time preload of all operator voice phrases for instant play   */
+  /* ------------------------------------------------------------------ */
+  useEffect(() => {
+      const phrases = [
+          ...Object.values(achievementAnnouncements),
+          ...aiService.getAllAmbientLines(),
+          ...aiService.getAllWelcomeMessages(),
+      ];
+      audioService.registerOperatorPhrases(phrases);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const [balance, setBalance] = useState<number>(0);
   const [_betAmount, _setBetAmount] = useState<string>('0.00');
   const [targetMultiplier, setTargetMultiplier] = useState<string>('2.00');

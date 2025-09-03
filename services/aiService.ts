@@ -58,6 +58,15 @@ class AiService {
         const randomIndex = Math.floor(Math.random() * this.wittyLines.length);
         return this.wittyLines[randomIndex];
     }
+
+    /**
+     * Exposes the full set of ambient lines so other services
+     * (e.g. audio pre-loader) can iterate and generate assets.
+     * Returns a shallow copy to protect the original list.
+     */
+    public getAllAmbientLines(): string[] {
+        return [...this.wittyLines];
+    }
     
     /**
      * Returns a random pre-approved session summary.
@@ -67,6 +76,15 @@ class AiService {
         const randomIndex = Math.floor(Math.random() * this.sessionSummaries.length);
         const summary = this.sessionSummaries[randomIndex];
         return Promise.resolve(summary);
+    }
+
+    /**
+     * Exposes the full set of welcome messages so they can be
+     * pre-recorded / pre-loaded as audio assets.
+     * Returns a shallow copy to avoid external mutation.
+     */
+    public getAllWelcomeMessages(): string[] {
+        return [...this.welcomeMessages];
     }
 }
 
