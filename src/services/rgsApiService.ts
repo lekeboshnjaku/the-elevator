@@ -2,6 +2,7 @@
 // It handles all communication with the Stake Engine RGS (Remote Game Server).
 
 import { CurrencyConfig, ApiError } from '../../types';
+import { logRequest, logResponse, logError, makeRequestId } from './logger';
 import { provablyFairService } from './provablyFairService';
 
 // --- Interfaces for API calls ---
@@ -36,6 +37,35 @@ interface RotateSeedResponse {
     newNonce: number;
 }
 
+/* ------------------------------------------------------------------ */
+/*                  Runtime response validators                       */
+/* ------------------------------------------------------------------ */
+const isCurrencyConfig = (v: any): v is CurrencyConfig =>
+    !!v && typeof v.symbol === 'string' && typeof v.prefix === 'boolean';
+
+const isAuthenticateResponse = (v: any): v is AuthenticateResponse =>
+    !!v &&
+    typeof v.balance === 'number' &&
+    typeof v.serverSeedHash === 'string' &&
+    typeof v.nonce === 'number' &&
+    isCurrencyConfig(v.currencyConfig) &&
+    typeof v.minBet === 'number' &&
+    typeof v.maxBet === 'number' &&
+    typeof v.minStep === 'number';
+
+const isPlayResponse = (v: any): v is PlayResponse =>
+    !!v &&
+    typeof v.multiplier === 'number' &&
+    typeof v.isWin === 'boolean' &&
+    typeof v.newBalance === 'number' &&
+    typeof v.winAmount === 'number' &&
+    typeof v.serverSeed === 'string';
+
+const isRotateServerSeedResponse = (v: any): v is RotateSeedResponse =>
+    !!v &&
+    typeof v.newServerSeedHash === 'string' &&
+    typeof v.newNonce === 'number';
+
 // --- Stake Engine API Client ---
 class RgsApiClient {
     private authToken: string | null = null;
@@ -50,10 +80,20 @@ class RgsApiClient {
     private mockMinBet = 0.01;
     private mockMaxBet = 1000;
     private mockMinStep = 0.01;
+
+    /* ------------- Runtime options ------------- */
+    private extraHeaders: Record<string, string> = {};
+    private requestTimeoutMs = 10_000;
     
-    public initialize(authToken: string, rgsUrl: string) {
+    public initialize(
+        authToken: string,
+        rgsUrl: string,
+        options?: { headers?: Record<string, string>; requestTimeoutMs?: number },
+    ) {
         this.authToken = authToken;
         this.rgsUrl = rgsUrl;
+        this.extraHeaders = options?.headers || {};
+        if (options?.requestTimeoutMs) this.requestTimeoutMs = options.requestTimeoutMs;
         /* ---- Determine if we should fall back to mock mode ---- */
         this.useMock =
             !authToken ||
@@ -102,39 +142,75 @@ class RgsApiClient {
         return (input + '0'.repeat(64)).slice(0, 64);
     }
 
-    private async makeRequest<T>(endpoint: string, method: string = 'GET', body?: any): Promise<T> {
+    private async makeRequest<T>(
+        endpoint: string,
+        method: string = 'GET',
+        body?: any,
+    ): Promise<T> {
         if (!this.rgsUrl || !this.authToken) {
             throw new Error('RGS API client not initialized. Call initialize() first.');
         }
 
         const url = `${this.rgsUrl}${endpoint}`;
-        
+        const reqId = makeRequestId();
+
+        // Merge headers
+        const headers: Record<string, string> = {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${this.authToken}`,
+            ...this.extraHeaders,
+        };
+
+        // Mask auth for log
+        const safeHeaders = { ...headers, Authorization: 'Bearer ***' };
+        logRequest(reqId, { method, url, headers: safeHeaders, body });
+
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), this.requestTimeoutMs);
+
         try {
             const response = await fetch(url, {
                 method,
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${this.authToken}`
-                },
-                body: body ? JSON.stringify(body) : undefined
+                headers,
+                body: body ? JSON.stringify(body) : undefined,
+                signal: controller.signal,
+            });
+            clearTimeout(timeout);
+
+            const plainHeaders: Record<string, string> = {};
+            response.headers.forEach((value, key) => (plainHeaders[key] = value));
+
+            let parsedBody: any;
+            try {
+                parsedBody = await response.clone().json();
+            } catch {
+                parsedBody = await response.text();
+            }
+
+            const preview =
+                typeof parsedBody === 'string' ? parsedBody.slice(0, 500) : parsedBody;
+            logResponse(reqId, {
+                status: response.status,
+                ok: response.ok,
+                headers: plainHeaders,
+                body: preview,
             });
 
             if (!response.ok) {
-                const errorData = await response.json().catch(() => ({ message: 'Unknown error' }));
-                throw new ApiError(errorData.message || `API error: ${response.statusText}`, response.status);
+                const message =
+                    (parsedBody && (parsedBody.message || parsedBody.error || parsedBody.details)) ||
+                    `HTTP ${response.status}`;
+                throw new ApiError(message, response.status);
             }
 
-            return await response.json();
-        } catch (error) {
-            if (error instanceof ApiError) {
-                throw error;
+            return parsedBody as T;
+        } catch (error: any) {
+            logError(reqId, error);
+            if (error instanceof ApiError) throw error;
+            if (error.name === 'AbortError') {
+                throw new ApiError('Request timed out', 504);
             }
-            
-            // Convert generic errors to ApiError with a 500 status
-            throw new ApiError(
-                error instanceof Error ? error.message : 'Unknown network error', 
-                500
-            );
+            throw new ApiError(error?.message || 'Network error', 500);
         }
     }
 
@@ -150,7 +226,11 @@ class RgsApiClient {
                 minStep: this.mockMinStep,
             };
         }
-        return this.makeRequest<AuthenticateResponse>('/authenticate', 'POST');
+        const data = await this.makeRequest<unknown>('/authenticate', 'POST');
+        if (!isAuthenticateResponse(data)) {
+            throw new ApiError('Invalid authenticate response format', 502);
+        }
+        return data;
     }
     
     public async play(request: PlayRequest): Promise<PlayResponse> {
@@ -181,7 +261,11 @@ class RgsApiClient {
                 serverSeed: this.mockServerSeed,
             };
         }
-        return this.makeRequest<PlayResponse>('/play', 'POST', request);
+        const data = await this.makeRequest<unknown>('/play', 'POST', request);
+        if (!isPlayResponse(data)) {
+            throw new ApiError('Invalid play response format', 502);
+        }
+        return data;
     }
 
     public async rotateServerSeed(): Promise<RotateSeedResponse> {
@@ -195,7 +279,11 @@ class RgsApiClient {
                 newNonce: this.mockNonce,
             };
         }
-        return this.makeRequest<RotateSeedResponse>('/rotate-server-seed', 'POST');
+        const data = await this.makeRequest<unknown>('/rotate-server-seed', 'POST');
+        if (!isRotateServerSeedResponse(data)) {
+            throw new ApiError('Invalid rotate-server-seed response format', 502);
+        }
+        return data;
     }
 }
 

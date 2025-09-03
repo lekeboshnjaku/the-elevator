@@ -109,6 +109,15 @@ const App: React.FC = () => {
                 const socialMode = urlParams.get('social') === 'true';
                 setSocialMode(socialMode);
 
+                // Optional custom headers for Stake Engine
+                const headers: Record<string, string> = {};
+                const gameId = urlParams.get('game_id');
+                const vendorId = urlParams.get('vendor_id');
+                const mathVersion = urlParams.get('math_version');
+                if (gameId) headers['X-Stake-Game-Id'] = gameId;
+                if (vendorId) headers['X-Stake-Vendor-Id'] = vendorId;
+                if (mathVersion) headers['X-Stake-Math-Version'] = mathVersion;
+
                 // Retrieve session token from query params (supports several key variants) or fall back to placeholder.
                 const sessionToken =
                     urlParams.get('sessionID') ??
@@ -119,7 +128,7 @@ const App: React.FC = () => {
                     'SESSION_TOKEN_FROM_STAKE_PLATFORM';
 
                 // Initialize RGS client with resolved session token and base URL.
-                rgsApiService.initialize(sessionToken, rgsUrl);
+                rgsApiService.initialize(sessionToken, rgsUrl, { headers, requestTimeoutMs: 12000 });
 
                 // Initialize audio service
                 await audioService.init();
