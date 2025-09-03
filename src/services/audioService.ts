@@ -17,65 +17,6 @@ class AudioService {
     private voiceLoadPromise: Promise<void> | null = null;
     private lastGlitchTime: number = 0;
 
-    /* ------------------------------------------------------------------ */
-    /*         Pre-recorded Operator Voice (new fields)                   */
-    /* ------------------------------------------------------------------ */
-    private operatorBuffers: Map<string, AudioBuffer> = new Map();
-    private preloadedPhrases: Set<string> = new Set();
-    private currentVoiceSource: AudioBufferSourceNode | null = null;
-    // Folder containing e.g. /assets/audio/operator/hello-there.webm
-    private operatorBasePath = '/assets/audio/operator';
-    
-    /* ------------------------------------------------------------------ */
-    /*               Helper utils for pre-recorded operator               */
-    /* ------------------------------------------------------------------ */
-
-    /** turn phrase into safe filename slug */
-    private slugify(text: string): string {
-        return text
-            .toLowerCase()
-            .trim()
-            .replace(/[^a-z0-9]+/g, '-')   // replace non-alnum with dashes
-            .replace(/^-+|-+$/g, '')       // trim leading/trailing dashes
-            .replace(/-+/g, '-');          // collapse repeats
-    }
-
-    /** fetch & decode buffer for phrase; returns cached instance if present */
-    private async loadOperatorBuffer(phrase: string): Promise<AudioBuffer | null> {
-        if (!this.audioContext) return null;
-        const slug = this.slugify(phrase);
-        if (this.operatorBuffers.has(slug)) return this.operatorBuffers.get(slug)!;
-
-        const exts = ['webm', 'ogg', 'mp3'];
-        for (const ext of exts) {
-            const url = `${this.operatorBasePath}/${slug}.${ext}`;
-            try {
-                const resp = await fetch(url, { cache: 'force-cache' });
-                if (!resp.ok) continue;
-                const buf = await resp.arrayBuffer();
-                const audio = await this.audioContext.decodeAudioData(buf.slice(0));
-                this.operatorBuffers.set(slug, audio);
-                return audio;
-            } catch {
-                /* try next ext */
-            }
-        }
-        console.warn(`[audio] Missing operator audio for phrase: "${phrase}" (slug: ${slug})`);
-        return null;
-    }
-
-    /** Pre-decode a list of phrases for instant playback */
-    public async registerOperatorPhrases(phrases: string[]): Promise<void> {
-        if (!this.audioContext) return;
-        const unique = Array.from(new Set(phrases.map(p => p.trim()).filter(Boolean)));
-        await Promise.all(
-            unique.map(async p => {
-                if (this.preloadedPhrases.has(p)) return;
-                this.preloadedPhrases.add(p);
-                await this.loadOperatorBuffer(p);
-            })
-        );
-    }
     // --- Custom Music Properties ---
     private backgroundMusicBuffer: AudioBuffer | null = null;
     private backgroundMusicSource: AudioBufferSourceNode | null = null;
@@ -142,15 +83,6 @@ class AudioService {
             this.musicGain.connect(this.masterGain);
 
             this._loadVoices();
-
-            /* ---------------------------------------------------------- */
-            /*  Pre-load all built-in operator phrases                    */
-            /* ---------------------------------------------------------- */
-            const builtInPhrases = Array.from(
-                new Set(this.operatorVoicemails.flat()) // flatten & dedupe
-            );
-            // Fire-and-forget – we don't await because init should resolve fast
-            this.registerOperatorPhrases(builtInPhrases);
         } catch (e) {
             console.error("Web Audio API is not supported or failed to init.", e);
         }
@@ -238,13 +170,6 @@ class AudioService {
         if (!enabled && 'speechSynthesis' in window) {
             window.speechSynthesis.cancel();
         }
-        // Also stop any pre-recorded audio that might be playing
-        if (!enabled && this.currentVoiceSource) {
-            try { this.currentVoiceSource.stop(); } catch {}
-            this.currentVoiceSource.disconnect();
-            this.currentVoiceSource = null;
-            this.isSpeakingFromQueue = false;
-        }
     }
     
     public speakWelcomeMessage = async (messageParts: string[], onEnd?: () => void) => {
@@ -305,27 +230,60 @@ class AudioService {
         // CREATIVE MIX 1: "Radio" High-Pass Filter Intro
         this._playRadioStatic();
     
-        if (this.voices.length === 0) {
-            this.isSpeakingFromQueue = false;
-            if (onEnd) onEnd();
-            return;
-        }
+        const utterance = new SpeechSynthesisUtterance(text);
         
-        // --- NEW Pre-recorded playback path (no TTS) -------------------
-        (async () => {
-            const buffer = await this.loadOperatorBuffer(text);
-            if (!buffer) {
-                this.isSpeakingFromQueue = false;
-                if (onEnd) onEnd();
-                return;
+        if (this.voices.length > 0) {
+            let selectedVoice: SpeechSynthesisVoice | undefined;
+            const enUSVoices = this.voices.filter(v => v.lang === 'en-US');
+    
+            // Prioritize high-quality "Google" voices if available
+            selectedVoice = enUSVoices.find(v => v.name.toLowerCase().includes('leda'));
+            if (!selectedVoice) {
+                selectedVoice = enUSVoices.find(v => v.name.includes('Google US English'));
+            }
+            if (!selectedVoice) {
+                selectedVoice = enUSVoices.find(v => v.name.includes('Google') && v.name.includes('Female'));
+            }
+            // Fallback to other known good voices
+            if (!selectedVoice) {
+                const knownGoodVoices = ['Samantha', 'Zira', 'Alex'];
+                selectedVoice = enUSVoices.find(v => knownGoodVoices.some(name => v.name.includes(name)));
+            }
+            if (!selectedVoice) {
+                selectedVoice = enUSVoices.find(v => v.name.includes('Female'));
+            }
+            // Generic fallbacks
+            if (!selectedVoice) {
+                selectedVoice = enUSVoices[0];
+            }
+            if (!selectedVoice) {
+                selectedVoice = this.voices.find(v => v.lang.startsWith('en'));
             }
 
-            const source = this.audioContext!.createBufferSource();
-            source.buffer = buffer;
-            source.connect(this.masterGain!);
-            this.currentVoiceSource = source;
+            if (selectedVoice) {
+                utterance.voice = selectedVoice;
+            }
+        }
 
-            const finish = () => {
+        utterance.volume = this.voiceVolume;
+        utterance.pitch = 0.9;
+        utterance.rate = 0.9;
+        
+        const originalOnEnd = onEnd;
+        
+        // CREATIVE MIX 2: "Glitch" Effect
+        utterance.onboundary = (event: SpeechSynthesisEvent) => {
+            if (!this.audioContext) return;
+            const now = this.audioContext.currentTime;
+            if (now - this.lastGlitchTime < 0.25) return; // Throttle
+    
+            if (Math.random() < 0.20) { // 20% chance (increased from 15%)
+                this._playGlitchSound();
+                this.lastGlitchTime = now;
+            }
+        };
+        
+        const onSpeechEnd = () => {
             // DJ MIX: Restore the music when the operator finishes.
             if (this.audioContext && this.musicGain && this.musicFilter) {
                 const now = this.audioContext.currentTime;
@@ -338,24 +296,30 @@ class AudioService {
             // CREATIVE MIX 3: "Dub Echo" Outro
             this._playDubEcho();
             
-                this.currentVoiceSource = null;
+            // Cleanup the boundary listener to prevent it from firing on a cancelled utterance
+            utterance.onboundary = null;
             
             // Allow the sequencer to play the next line.
             this.isSpeakingFromQueue = false;
             
-                if (onEnd) onEnd();
+            if (originalOnEnd) originalOnEnd();
         };
     
-            source.onended = finish;
-            try {
-                source.start();
-            } catch {
-                finish();
-            }
-        })();
-    }
+        utterance.onend = onSpeechEnd;
     
-    // (old TTS implementation removed)
+        utterance.onerror = (event: SpeechSynthesisErrorEvent) => {
+            // 'interrupted' and 'canceled' are expected errors when we intentionally stop speech
+            // for a higher-priority message (e.g., an achievement announcement).
+            // We don't need to pollute the console with these expected events.
+            if (event.error !== 'interrupted' && event.error !== 'canceled') {
+                console.error('SpeechSynthesisUtterance.onerror', event);
+            }
+            onSpeechEnd(); // Ensure music is restored and echo plays even on error
+        };
+    
+        // Removed long delay to improve responsiveness
+        window.speechSynthesis.speak(utterance);
+    }
     
     public playOperatorCallingLoop(): Promise<void> {
         return new Promise(async (resolve) => {
@@ -965,14 +929,9 @@ class AudioService {
             // --- Speech Sequencer Logic ---
             if (this.cancelNext) {
                 this.cancelNext = false; // Consume flag
-                // Stop any currently playing pre-recorded voice buffer
-                if (this.currentVoiceSource) {
-                    try { this.currentVoiceSource.stop(); } catch {}
-                    try { this.currentVoiceSource.disconnect(); } catch {}
-                    this.currentVoiceSource = null;
+                if ('speechSynthesis' in window) {
+                    window.speechSynthesis.cancel(); // This should trigger onend for the current utterance
                 }
-                // Reset speaking flag so next queued item (likely high-priority) can start immediately
-                this.isSpeakingFromQueue = false;
                 // Purge any remaining low-priority jobs. The high-priority job is preserved at the front.
                 this.speechQueue = this.speechQueue.filter(j => j.highPriority);
             }
