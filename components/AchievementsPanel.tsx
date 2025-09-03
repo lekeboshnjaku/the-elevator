@@ -66,19 +66,22 @@ const AchievementsPanel: React.FC<AchievementsPanelProps> = ({ isOpen, onClose, 
                         id="achievements-title"
                         className="text-2xl font-black font-[Orbitron] text-white text-glow-cyan flex items-center gap-2"
                     >
-                        {/* Neon medal / shield icon */}
+                        {/* Glowing hexagon badge with star */}
                         <svg
                             xmlns="http://www.w3.org/2000/svg"
                             viewBox="0 0 24 24"
-                            className="w-6 h-6 text-cyan-300 drop-shadow-[0_0_6px_#22d3ee]"
+                            className="w-6 h-6 icon-glow-cyan animate-cyan-icon-pulse"
                             fill="currentColor"
+                            stroke="currentColor"
+                            strokeWidth={1.8}
                         >
-                            <path d="M12 2 4 5v5c0 5.55 3.84 10.74 8 12 4.16-1.26 8-6.45 8-12V5l-8-3Z" />
+                            {/* Hexagon outline */}
                             <path
-                                d="M12 13.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Z"
-                                className="text-amber-300"
-                                fill="currentColor"
+                                d="M12 2l6.93 4v8l-6.93 4-6.93-4v-8L12 2z"
+                                fill="none"
                             />
+                            {/* Star */}
+                            <path d="M12 8.5l1.45 2.94 3.25.47-2.35 2.3.55 3.23-2.9-1.53-2.9 1.53.55-3.23-2.35-2.3 3.25-.47L12 8.5z" />
                         </svg>
                         Session Achievements
                     </h2>

@@ -394,8 +394,25 @@ const App: React.FC = () => {
                         )}
                       </button>
                     </div>
-                    <button onClick={() => setAchievementsOpen(true)} className="group hidden sm:block p-2 rounded-full hover:bg-slate-800/80 active:scale-95 transition-all bg-slate-900/50 border border-amber-500/40 shadow-lg shadow-amber-500/20 hover:shadow-amber-400/40" aria-label="Open achievements panel">
-                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6 text-amber-400 group-hover:text-amber-300 transition-colors duration-200"><path fillRule="evenodd" d="M12 22C6.477 22 2 17.523 2 12S6.477 2 12 2s10 4.477 10 10-4.477 10-10 10ZM12 18a6 6 0 1 0 0-12 6 6 0 0 0 0 12Z" clipRule="evenodd" /></svg>
+                    <button
+                      onClick={() => setAchievementsOpen(true)}
+                      className="group hidden sm:block p-2 rounded-full hover:bg-slate-800/80 active:scale-95 transition-all bg-slate-900/50 border border-cyan-400/40 shadow-lg shadow-cyan-400/20 hover:shadow-cyan-300/40"
+                      aria-label="Open achievements panel"
+                    >
+                      {/* Glowing hexagon-star icon */}
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 24 24"
+                        className="w-6 h-6 icon-glow-cyan animate-cyan-icon-pulse transition-colors duration-200"
+                        fill="currentColor"
+                        stroke="currentColor"
+                        strokeWidth={1.8}
+                      >
+                        {/* Hexagon outline */}
+                        <path d="M12 2l6.93 4v8l-6.93 4-6.93-4v-8L12 2z" fill="none" />
+                        {/* Star */}
+                        <path d="M12 8.5l1.45 2.94 3.25.47-2.35 2.3.55 3.23-2.9-1.53-2.9 1.53.55-3.23-2.35-2.3 3.25-.47L12 8.5z" />
+                      </svg>
                     </button>
                     <button className="lg:hidden bg-slate-800/80 p-3 rounded-full text-white hover:bg-slate-700/80 active:scale-90 transition-all" onClick={() => setStatsPanelOpen(true)} aria-label="Open stats panel">
                       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-5 h-5"><path d="M1 1.75A.75.75 0 0 1 1.75 1h16.5a.75.75 0 0 1 0 1.5H1.75A.75.75 0 0 1 1 1.75ZM1 6.25A.75.75 0 0 1 1.75 5.5h16.5a.75.75 0 0 1 0 1.5H1.75A.75.75 0 0 1 1 6.25ZM1.75 10a.75.75 0 0 0 0 1.5h16.5a.75.75 0 0 0 0-1.5H1.75Z" /><path d="M1.75 15.5a.75.75 0 0 1 .75-.75h1.5a.75.75 0 0 1 0 1.5h-1.5a.75.75 0 0 1-.75-.75Zm3.75 0a.75.75 0 0 1 .75-.75h1.5a.75.75 0 0 1 0 1.5h-1.5a.75.75 0 0 1-.75-.75Zm3.75 0a.75.75 0 0 1 .75-.75h1.5a.75.75 0 0 1 0 1.5h-1.5a.75.75 0 0 1-.75-.75Z" /></svg>

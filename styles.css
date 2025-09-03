@@ -297,3 +297,21 @@ body {
     0 0 22px rgba(0, 246, 255, 0.35) inset;
   filter: brightness(1.15);
 }
+
+/* ------------------------------------------------------------------ */
+/*  NEW: Cyan Icon Glow Pulse (for hexagon-star achievement icon)      */
+/* ------------------------------------------------------------------ */
+
+@keyframes cyan-icon-pulse {
+  0%, 100% {
+    filter: drop-shadow(0 0 6px rgba(34, 211, 238, 0.35))
+            drop-shadow(0 0 2px rgba(34, 211, 238, 0.35));
+  }
+  50% {
+    filter: drop-shadow(0 0 12px rgba(34, 211, 238, 0.75))
+            drop-shadow(0 0 6px rgba(34, 211, 238, 0.50));
+  }
+}
+
+.icon-glow-cyan          { color: #22d3ee; }
+.animate-cyan-icon-pulse { animation: cyan-icon-pulse 2.4s ease-in-out infinite; }
