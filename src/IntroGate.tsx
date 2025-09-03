@@ -4,8 +4,8 @@ interface IntroGateProps {
   children: React.ReactNode;
 }
 
-const VIDEO_SRC = '/assets/intro.mp4';
-const IMAGE_SRC = '/assets/intro.png';
+const VIDEO_SRC = 'assets/intro.mp4';
+const IMAGE_SRC = 'assets/intro.png';
 const IMAGE_DISPLAY_DURATION = 2500; // ms
 const HARD_TIMEOUT_DURATION = 8000; // ms
 
