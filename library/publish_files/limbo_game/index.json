@@ -1,0 +1,10 @@
+{
+    "modes":  [
+                  {
+                      "cost":  1,
+                      "weights":  "lookup_table.csv",
+                      "name":  "limbo",
+                      "events":  "game_logic.jsonl.zst"
+                  }
+              ]
+}

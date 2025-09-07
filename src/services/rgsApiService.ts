@@ -102,6 +102,12 @@ class RgsApiClient {
             rgsUrl.startsWith('http://localhost') ||
             rgsUrl.startsWith('https://localhost');
 
+        // Force real mode when hitting Stake Engine production endpoints
+        const isStakeProd = /stake[-.]?engine\.com/i.test(rgsUrl);
+        if (isStakeProd) {
+            this.useMock = false;
+        }
+
         /* Prepare mock data */
         if (this.useMock) {
             const bytes = new Uint8Array(16);

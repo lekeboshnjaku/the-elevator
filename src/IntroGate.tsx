@@ -6,18 +6,31 @@ interface IntroGateProps {
 
 const VIDEO_SRC = 'assets/intro.mp4';
 const IMAGE_SRC = 'assets/intro.png';
-const IMAGE_DISPLAY_DURATION = 2500; // ms
-const HARD_TIMEOUT_DURATION = 8000; // ms
+// Shorter fallback timings so preview/file-view loads quickly
+const IMAGE_DISPLAY_DURATION = 1000; // ms
+const HARD_TIMEOUT_DURATION = 3000; // ms
 
 const IntroGate: React.FC<IntroGateProps> = ({ children }) => {
   const [showIntro, setShowIntro] = useState(true);
   const [useImageFallback, setUseImageFallback] = useState(false);
+  // Allow query ?noIntro=1 or ?skipIntro=1 to bypass the gate (useful in raw file previews)
+  const params = new URLSearchParams(window.location.search);
+  const skipIntroParam =
+    params.get('noIntro') === '1' || params.get('skipIntro') === '1';
   const videoRef = useRef<HTMLVideoElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   // Use browser timer type (`number`) instead of Node timer type to avoid the
   // NodeJS dependency in the browser bundle.
   const hardTimeoutRef = useRef<number | null>(null);
   const imageFallbackTimeoutRef = useRef<number | null>(null);
+
+  // Immediately skip intro if requested via URL param
+  useEffect(() => {
+    if (skipIntroParam) {
+      setShowIntro(false);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   /**
    * Draw the media element to a small off-screen canvas,
@@ -106,7 +119,7 @@ const IntroGate: React.FC<IntroGateProps> = ({ children }) => {
 
   useEffect(() => {
     // Set hard timeout as a safety measure
-    hardTimeoutRef.current = setTimeout(() => {
+    hardTimeoutRef.current = window.setTimeout(() => {
       console.log('Hard timeout triggered - forcing intro to finish');
       finishIntro();
     }, HARD_TIMEOUT_DURATION);
@@ -129,7 +142,7 @@ const IntroGate: React.FC<IntroGateProps> = ({ children }) => {
                   });
                 } else {
                   // Fallback: wait 50 ms then sample
-                  setTimeout(() => applyEdgeColor(videoElement), 50);
+                  window.setTimeout(() => applyEdgeColor(videoElement), 50);
                 }
           })
           .catch(error => {
@@ -137,9 +150,10 @@ const IntroGate: React.FC<IntroGateProps> = ({ children }) => {
             setUseImageFallback(true);
             
             // Set timeout for image display duration
-            imageFallbackTimeoutRef.current = setTimeout(() => {
-              finishIntro();
-            }, IMAGE_DISPLAY_DURATION);
+            imageFallbackTimeoutRef.current = window.setTimeout(
+              finishIntro,
+              IMAGE_DISPLAY_DURATION,
+            );
           });
       }
     }
@@ -147,10 +161,10 @@ const IntroGate: React.FC<IntroGateProps> = ({ children }) => {
     // Cleanup function
     return () => {
       if (hardTimeoutRef.current) {
-        clearTimeout(hardTimeoutRef.current);
+      window.clearTimeout(hardTimeoutRef.current);
       }
       if (imageFallbackTimeoutRef.current) {
-        clearTimeout(imageFallbackTimeoutRef.current);
+        window.clearTimeout(imageFallbackTimeoutRef.current);
       }
     };
   }, []);

@@ -59,7 +59,7 @@ const Elevator: React.FC<ElevatorProps> = ({
   }, [gameStatus, isInstantBet, animationDuration]);
   
   // Base classes for the main elevator body
-  const elevatorBodyBaseClasses = 'relative bg-gradient-to-b from-slate-700 via-slate-800 to-slate-900 rounded-t-lg shadow-2xl border-x-4 border-t-4 border-slate-600';
+  const elevatorBodyBaseClasses = 'relative bg-gradient-to-b from-slate-700 via-slate-800 to-slate-900 rounded-t-lg shadow-2xl border-x-[3px] border-t-[3px] border-slate-600';
 
   useEffect(() => {
     const prevStatus = prevGameStatusRef.current;
@@ -91,8 +91,14 @@ const Elevator: React.FC<ElevatorProps> = ({
             <div className="absolute inset-2 bg-slate-800 rounded-t-md overflow-hidden border border-black/50 grated-floor">
                 <div className="absolute inset-0 bg-gradient-to-b from-slate-600 to-slate-800 opacity-80"></div>
                 <StructuralBeams />
-                <div className="absolute top-0 left-0 right-0 h-4 bg-slate-500/50 flex items-center justify-center shadow-inner">
-                    <div className="w-24 h-2 bg-white/50 rounded-full shadow-[0_0_10px_2px_rgba(255,255,255,0.4)] opacity-50"></div>
+                {/* Cyan indicator bar (glow) */}
+                <div className="absolute top-0 left-0 right-0 h-4 flex items-center justify-center">
+                    <div className="w-24 h-1.5 rounded-full"
+                         style={{
+                             background: 'var(--indicator-fill)',
+                             boxShadow: '0 0 12px var(--indicator-glow-outer), 0 0 18px var(--indicator-glow-inner)'
+                         }}
+                    ></div>
                 </div>
 
                     {/* Moving progress indicator (vertical bar) */}
@@ -109,7 +115,7 @@ const Elevator: React.FC<ElevatorProps> = ({
             </div>
 
             {/* Elevator Door Container */}
-            <div className="absolute inset-2 overflow-hidden rounded-t-md shadow-[0_0_15px_rgba(34,211,238,0.4),_inset_0_0_10px_rgba(34,211,238,0.2)]">
+            <div className="absolute inset-2 overflow-hidden rounded-t-md shadow-[0_0_20px_rgba(0,246,255,0.35),_inset_0_0_14px_rgba(0,246,255,0.18)]">
                 {/* Left Door */}
                 <div
                 className="absolute top-0 bottom-0 left-0 w-1/2 bg-slate-700 transition-transform ease-in-out"
@@ -137,10 +143,10 @@ const Elevator: React.FC<ElevatorProps> = ({
             </div>
 
             {/* Left Light Bar */}
-            <div className="absolute top-1/2 -translate-y-1/2 -left-8 h-3/4 w-2 rounded-full bg-cyan-300 shadow-[0_0_16px_4px_rgba(34,211,238,0.45)]"></div>
-            
+            <div className="absolute top-1/2 -translate-y-1/2 left-[-18px] h-[86%] w-[10px] rounded-full bg-gradient-to-b from-[#5CF1FF] via-[#4BE8FF] to-[#5CF1FF] shadow-[0_0_24px_6px_rgba(0,246,255,0.35)]"></div>
+
             {/* Right Light Bar */}
-            <div className="absolute top-1/2 -translate-y-1/2 -right-8 h-3/4 w-2 rounded-full bg-cyan-300 shadow-[0_0_16px_4px_rgba(34,211,238,0.45)]"></div>
+            <div className="absolute top-1/2 -translate-y-1/2 right-[-18px] h-[86%] w-[10px] rounded-full bg-gradient-to-b from-[#5CF1FF] via-[#4BE8FF] to-[#5CF1FF] shadow-[0_0_24px_6px_rgba(0,246,255,0.35)]"></div>
         </div>
     </div>
   );

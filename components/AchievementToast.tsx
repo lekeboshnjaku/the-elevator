@@ -27,27 +27,15 @@ const AchievementToast: React.FC<AchievementToastProps> = ({ achievement, onClos
 
     return (
         <>
-            <style>{`
-                @keyframes toast-slide-in {
-                  from { opacity: 0; transform: translateX(100%); }
-                  to { opacity: 1; transform: translateX(0); }
-                }
-                @keyframes toast-slide-out {
-                  from { opacity: 1; transform: translateX(0); }
-                  to { opacity: 0; transform: translateX(100%); }
-                }
-                .animate-toast-in { animation: toast-slide-in 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards; }
-                .animate-toast-out { animation: toast-slide-out 0.5s cubic-bezier(0.55, 0.085, 0.68, 0.53) forwards; }
-            `}</style>
             <div
-                className={`bg-slate-800/80 backdrop-blur-md rounded-lg shadow-2xl border border-amber-400/50 p-4 w-full max-w-sm grid grid-cols-[auto,1fr] items-center gap-4 overflow-hidden ${isVisible ? 'animate-toast-in' : 'animate-toast-out'}`}
+                className={`toast-panel toast-neon-frame p-4 w-full max-w-sm grid grid-cols-[auto,1fr] items-center gap-4 overflow-hidden ${isVisible ? 'animate-toast-pop-in' : 'animate-toast-pop-out'}`}
                 role="alert"
             >
-                <div className="flex-shrink-0 w-12 h-12 p-1.5 self-center grid place-items-center rounded-full toast-icon bg-amber-500/20 text-amber-400">
+                <div className="flex-shrink-0 w-12 h-12 p-1.5 self-center grid place-items-center toast-icon toast-icon-ring neon-round-btn neon-round-btn--active">
                     <div className="w-7 h-7 grid place-items-center">{achievement.icon}</div>
                 </div>
                 <div className="flex-grow self-center">
-                    <h3 className="font-bold text-amber-300">Achievement Unlocked!</h3>
+                    <h3 className="toast-title">Achievement Unlocked!</h3>
                     <p className="text-sm text-white">{achievement.name}</p>
                 </div>
             </div>

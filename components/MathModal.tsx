@@ -1,14 +1,23 @@
 import React, { useEffect, useRef } from 'react';
-import { HOUSE_EDGE } from '../constants';
+import { HOUSE_EDGE, MAX_MULTIPLIER } from '../constants';
 
 interface MathModalProps {
   isOpen: boolean;
   onClose: () => void;
   targetMultiplier: string;
   t: (key: string, ...args: any[]) => string;
+  betLimits: { minBet: number; maxBet: number; minStep: number };
+  currencyConfig: { symbol: string; prefix: boolean };
 }
 
-const MathModal: React.FC<MathModalProps> = ({ isOpen, onClose, targetMultiplier, t }) => {
+const MathModal: React.FC<MathModalProps> = ({
+  isOpen,
+  onClose,
+  targetMultiplier,
+  t,
+  betLimits,
+  currencyConfig,
+}) => {
   if (!isOpen) return null;
   
   const closeButtonRef = useRef<HTMLButtonElement>(null);
@@ -20,9 +29,22 @@ const MathModal: React.FC<MathModalProps> = ({ isOpen, onClose, targetMultiplier
       }
   }, [isOpen]);
 
-  const target = parseFloat(targetMultiplier) || 2.00;
-  const winChance = (target > 1 && target <= 1_000_000) ? ((1 - HOUSE_EDGE) / target) * 100 : 0;
+  const formatMoney = (amt: number) =>
+    currencyConfig.prefix
+      ? `${currencyConfig.symbol}${amt.toFixed(2)}`
+      : `${amt.toFixed(2)}${currencyConfig.symbol}`;
+
+  const target = parseFloat(targetMultiplier) || 2.0;
+  const winChance =
+    target > 1 && target <= MAX_MULTIPLIER
+      ? ((1 - HOUSE_EDGE) / target) * 100
+      : 0;
   const rtp = (1 - HOUSE_EDGE) * 100;
+
+  // Exact min/max total payout (not profit), truncated to cents
+  const minWin = Math.floor(betLimits.minBet * 1.01 * 100) / 100;
+  const maxWin =
+    Math.floor(betLimits.maxBet * MAX_MULTIPLIER * 100) / 100;
 
   return (
     <div
@@ -72,9 +94,17 @@ const MathModal: React.FC<MathModalProps> = ({ isOpen, onClose, targetMultiplier
               <p className="text-sm text-slate-400">Return to Player (RTP)</p>
               <p className="text-xl font-bold text-green-400">{rtp.toFixed(2)}%</p>
             </div>
-             <div className="bg-slate-900 p-3 rounded-lg text-center">
+            <div className="bg-slate-900 p-3 rounded-lg text-center">
               <p className="text-sm text-slate-400">House Edge</p>
               <p className="text-xl font-bold text-red-400">{(HOUSE_EDGE * 100).toFixed(2)}%</p>
+            </div>
+            <div className="bg-slate-900 p-3 rounded-lg text-center">
+              <p className="text-sm text-slate-400">Min Win (total)</p>
+              <p className="text-xl font-bold text-amber-300">{formatMoney(minWin)}</p>
+            </div>
+            <div className="bg-slate-900 p-3 rounded-lg text-center">
+              <p className="text-sm text-slate-400">Max Win (total)</p>
+              <p className="text-xl font-bold text-amber-300">{formatMoney(maxWin)}</p>
             </div>
           </div>
           

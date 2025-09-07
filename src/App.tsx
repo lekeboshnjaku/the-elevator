@@ -56,6 +56,8 @@ const App: React.FC = () => {
     const [isSocialMode, setSocialMode] = useState(false);
     const [isAchievementsOpen, setAchievementsOpen] = useState(false);
     const [achievementToastQueue, setAchievementToastQueue] = useState<Achievement[]>([]);
+    // Fatal init error (keeps UI running in limited mode)
+    const [initError, setInitError] = useState<string | null>(null);
 
     // Refs
     const fairnessContainerRef = useRef<HTMLDivElement>(null);
@@ -105,7 +107,7 @@ const App: React.FC = () => {
                 // Initial setup tasks
                 smoothAnimateProgressTo(10);
                 const urlParams = new URLSearchParams(window.location.search);
-                const rgsUrl = urlParams.get('rgs_url') || 'https://rgs.stake-engine.com/v1'; // Fallback for local dev
+                const rgsUrl = urlParams.get('rgs_url') || 'http://localhost'; // Local fallback keeps mock mode
                 const socialMode = urlParams.get('social') === 'true';
                 setSocialMode(socialMode);
 
@@ -152,27 +154,14 @@ const App: React.FC = () => {
                 }, Math.max(500, remainingTime)); // Use at least 500ms, or more if needed to meet min time
 
             } catch (error) {
-                 console.error("Critical initialization failure:", error);
-                 const root = document.getElementById('root');
-                 if (root) {
-                     // Safely embed the error details so the user/dev can see what went wrong.
-                     const escapeHtml = (str: string) =>
-                         str.replace(/&/g, '&amp;')
-                            .replace(/</g, '&lt;')
-                            .replace(/>/g, '&gt;');
-
-                     const msg =
-                         error instanceof Error
-                             ? (error.stack || error.message)
-                             : String(error);
-
-                     root.innerHTML = `<div style="color: red; padding: 20px; text-align: center;">
-                         Failed to load game. Please refresh.
-                         <pre style="margin-top:1em;text-align:left;color:#f87171;white-space:pre-wrap;">${escapeHtml(
-                             msg,
-                         )}</pre>
-                     </div>`;
-                 }
+                console.error('Critical initialization failure:', error);
+                const msg =
+                    error instanceof Error ? error.stack || error.message : String(error);
+                setInitError(msg);
+                // Still transition out of loading so UI mounts.
+                const elapsed = Date.now() - startTime;
+                const wait = Math.max(0, MIN_LOADING_TIME_MS - elapsed) + 500;
+                setTimeout(() => setAppPhase('playing'), wait);
             }
         };
 
@@ -365,6 +354,11 @@ const App: React.FC = () => {
             onDrop={handleDrop}
         >
             <ElevatorShaftBackground />
+            {initError && (
+                <div className="fixed top-0 left-0 right-0 z-50 bg-red-600/90 text-white text-sm p-2 text-center">
+                    Initialization failed. Running UI with limited functionality. Check console for details.
+                </div>
+            )}
             <ErrorToast error={game.error} onClose={game.clearError} />
             <DropzoneOverlay isVisible={isDragOver} />
              {/* Accessibility: ARIA Live Region for screen readers */}
@@ -460,7 +454,6 @@ const App: React.FC = () => {
                       balance={game.balance}
                       canBet={game.canBet}
                       gameStatus={game.gameStatus}
-                      history={game.history}
                       isAutoBetting={game.isAutoBetting}
                       startAutoBet={game.startAutoBet}
                       stopAutoBet={game.stopAutoBet}
@@ -498,7 +491,6 @@ const App: React.FC = () => {
                         balance={game.balance}
                         canBet={game.canBet}
                         gameStatus={game.gameStatus}
-                        history={game.history}
                         isAutoBetting={game.isAutoBetting}
                         startAutoBet={game.startAutoBet}
                         stopAutoBet={game.stopAutoBet}
@@ -555,6 +547,8 @@ const App: React.FC = () => {
                 isOpen={isMathOpen}
                 onClose={() => setMathOpen(false)}
                 targetMultiplier={game.targetMultiplier}
+                betLimits={game.betLimits}
+                currencyConfig={game.currencyConfig}
                 t={t}
             />
             {isFairnessOpen && (

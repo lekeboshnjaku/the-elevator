@@ -3,6 +3,12 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './src/App';
 import IntroGate from './src/IntroGate';
+import { audioService } from './src/services/audioService';
+
+/* ------------------------------------------------------------------ */
+/*  Unlock Web-Audio on first user gesture (click / keydown) early    */
+/* ------------------------------------------------------------------ */
+audioService.initAudioUnlock();
 
 const rootElement = document.getElementById('root');
 if (!rootElement) {

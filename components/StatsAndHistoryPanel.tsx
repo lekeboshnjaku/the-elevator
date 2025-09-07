@@ -64,8 +64,14 @@ const StatsAndHistoryPanel: React.FC<StatsAndHistoryPanelProps> = ({ history, se
                 {/* Scanline effect */}
                 <div className="absolute inset-0" style={{background: 'repeating-linear-gradient(0deg, rgba(0,0,0,0.3) 0, rgba(0,0,0,0.3) 1px, transparent 1px, transparent 3px)'}}></div>
             </div>
-            <div className="flex justify-between items-center border-b-2 border-slate-950/50 pb-2">
-                <h3 className="font-bold accent neon text-md uppercase tracking-wider" style={{fontFamily:'"Orbitron", sans-serif'}}>Session Data</h3>
+            {/* Neon cyan title bar */}
+            <div className="flex justify-between items-center rounded-md bg-slate-900/80 border border-cyan-400/40 shadow-[0_0_14px_rgba(0,246,255,0.35)] px-3 py-1.5">
+                <h3
+                    className="font-bold text-md uppercase tracking-wider neon"
+                    style={{ fontFamily: '"Orbitron", sans-serif', color: 'var(--accent)' }}
+                >
+                    SESSION DATA
+                </h3>
                 {onClose && (
                      <button 
                         className="lg:hidden bg-slate-800/80 p-1 rounded-full text-white hover:bg-slate-700/80 active:scale-90 transition-all"
@@ -80,11 +86,11 @@ const StatsAndHistoryPanel: React.FC<StatsAndHistoryPanelProps> = ({ history, se
             </div>
             
             <div className="grid grid-cols-2 gap-3 text-center">
-                <div className="bg-slate-950/50 p-2 rounded-md border border-slate-700/50 shadow-inner">
+                <div className="bg-slate-950/50 p-2 rounded-md border border-cyan-400/40 shadow-[0_0_12px_rgba(0,246,255,0.25)]">
                     <div className="text-xs text-slate-400 uppercase">Session P/L</div>
                     <div className={`font-mono font-bold ${profitColor}`}>{formatCurrency(sessionProfit)}</div>
                 </div>
-                 <div className="bg-slate-950/50 p-2 rounded-md border border-slate-700/50 shadow-inner">
+                 <div className="bg-slate-950/50 p-2 rounded-md border border-cyan-400/40 shadow-[0_0_12px_rgba(0,246,255,0.25)]">
                     <div className="text-xs text-slate-400 uppercase">Highest</div>
                     <div className="font-mono font-bold text-sky-400">{highestMultiplier.toFixed(2)}x</div>
                 </div>

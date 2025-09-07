@@ -140,7 +140,7 @@ body {
   font-style: normal;
   font-weight: 400;
   font-display: block;
-  src: url('assets/fonts/anton-v25-latin-regular.woff2') format('woff2');
+  src: url('./assets/fonts/anton-v25-latin-regular.woff2') format('woff2');
 }
 
 /* Orbitron */
@@ -149,7 +149,7 @@ body {
   font-style: normal;
   font-weight: 400 900;
   font-display: block;
-  src: url('assets/fonts/orbitron-v31-latin-variable-wght.woff2') format('woff2');
+  src: url('./assets/fonts/orbitron-v31-latin-variable-wght.woff2') format('woff2');
 }
 
 /* Chakra Petch */
@@ -158,7 +158,7 @@ body {
   font-style: normal;
   font-weight: 400;
   font-display: block;
-  src: url('assets/fonts/chakra-petch-v11-latin-regular.woff2') format('woff2');
+  src: url('./assets/fonts/chakra-petch-v11-latin-regular.woff2') format('woff2');
 }
 
 @font-face {
@@ -166,7 +166,7 @@ body {
   font-style: normal;
   font-weight: 700;
   font-display: block;
-  src: url('assets/fonts/chakra-petch-v11-latin-700.woff2') format('woff2');
+  src: url('./assets/fonts/chakra-petch-v11-latin-700.woff2') format('woff2');
 }
 
 /* Extracted from components for cleaner code */
@@ -315,3 +315,37 @@ body {
 
 .icon-glow-cyan          { color: #22d3ee; }
 .animate-cyan-icon-pulse { animation: cyan-icon-pulse 2.4s ease-in-out infinite; }
+
+/* ------------------------------------------------------------------ */
+/*  Responsive fallbacks for when Tailwind variants are missing       */
+/* ------------------------------------------------------------------ */
+
+@media (min-width: 640px) {
+  .sm\:block { display: block !important; }
+  .sm\:flex { display: flex !important; }
+  .sm\:hidden { display: none !important; }
+}
+
+@media (min-width: 768px) {
+  .md\:block { display: block !important; }
+  .md\:flex { display: flex !important; }
+  .md\:hidden { display: none !important; }
+}
+
+@media (min-width: 1024px) {
+  .lg\:block { display: block !important; }
+  .lg\:flex { display: flex !important; }
+  .lg\:hidden { display: none !important; }
+}
+
+@media (min-width: 1280px) {
+  .xl\:block { display: block !important; }
+  .xl\:flex { display: flex !important; }
+  .xl\:hidden { display: none !important; }
+}
+
+/* Minimal spacing fallbacks used in App.tsx */
+@media (min-width: 1280px) {
+  .xl\:gap-16 { gap: 4rem !important; }
+  .xl\:px-8 { padding-left: 2rem !important; padding-right: 2rem !important; }
+}

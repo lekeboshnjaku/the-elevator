@@ -88,6 +88,30 @@ class AudioService {
         }
     }
 
+    /**
+     * Unlock Web-Audio on the first user gesture (click / keydown).
+     * Should be called once during application bootstrap.
+     */
+    public initAudioUnlock = () => {
+        const unlockHandler = async () => {
+            try {
+                // Ensure AudioContext exists, then resume if it is suspended.
+                await this.init();
+                await this.resumeContext();
+            } finally {
+                // Clean up listeners – `{ once:true }` already removes the one triggered,
+                // but we explicitly remove both to be absolutely sure.
+                window.removeEventListener('click', unlockHandler);
+                window.removeEventListener('keydown', unlockHandler);
+            }
+        };
+
+        // Attach listeners only once – if they were already attached, do nothing.
+        // Using `{ once:true }` guarantees the handler fires at most one time.
+        window.addEventListener('click', unlockHandler, { once: true, passive: true });
+        window.addEventListener('keydown', unlockHandler, { once: true, passive: true });
+    }
+
     public async loadAndPlayMusicFromUrl(url: string) {
         if (!this.audioContext || !this.musicFilter) return;
 

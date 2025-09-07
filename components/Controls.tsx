@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
-import { GameStatus, AutoBetSettings, AutoBetAction, HistoryEntry } from '../types';
-import HistoryBar from './HistoryBar';
+import { GameStatus, AutoBetSettings, AutoBetAction } from '../types';
 import { HOUSE_EDGE } from '../constants';
 
 interface ControlsProps {
@@ -12,7 +11,6 @@ interface ControlsProps {
   balance: number;
   canBet: boolean;
   gameStatus: GameStatus;
-  history: HistoryEntry[];
   isAutoBetting: boolean;
   startAutoBet: (settings: AutoBetSettings) => void;
   stopAutoBet: () => void;
@@ -85,7 +83,7 @@ const ManualBetPanel: React.FC<Pick<ControlsProps, 'betAmount' | 'setBetAmount' 
                 <InputField label={props.t('targetMultiplier')} value={props.targetMultiplier} onChange={(e) => props.setTargetMultiplier(e.target.value)} disabled={props.isAutoBetting} />
                 <div className="relative">
                     <span className="absolute left-3 top-1 text-xs text-slate-400 uppercase tracking-wider">{props.t('winChance')}</span>
-                    <div className="w-full bg-slate-950/50 rounded-md pt-5 pb-2 sm:pt-7 sm:pb-3 px-3 text-white font-mono text-sm sm:text-lg transition-all duration-300 border border-slate-700 shadow-inner h-full flex items-center">
+                    <div className="w-full bg-slate-950/50 rounded-md pt-5 pb-2 sm:pt-7 sm:pb-3 px-3 text-white font-mono text-sm sm:text-lg transition-all duration-300 border control-field h-full flex items-center">
                         <span className="text-green-400 text-glow-green font-bold">{winChance.toFixed(4)}%</span>
                     </div>
                 </div>
@@ -160,7 +158,7 @@ const InputField: React.FC<{ label: string; value: string; onChange?: (e: React.
             onChange={onChange}
             disabled={disabled}
             placeholder={placeholder}
-            className={`w-full bg-slate-950/50 rounded-md pt-5 pb-2 sm:pt-7 sm:pb-3 px-3 text-white font-mono text-sm sm:text-lg focus:outline-none transition-all border border-slate-700 shadow-inner disabled:opacity-50 ${isInvalid ? 'ring-2 ring-red-500/70 focus:ring-red-500' : 'focus:ring-2 focus:ring-sky-500 focus:shadow-[0_0_15px_rgba(56,189,248,0.5),_inset_0_0_8px_rgba(56,189,248,0.4)]'}`}
+            className={`w-full bg-slate-950/50 rounded-md pt-5 pb-2 sm:pt-7 sm:pb-3 px-3 text-white font-mono text-sm sm:text-lg focus:outline-none transition-all border control-field disabled:opacity-50 ${isInvalid ? 'ring-2 ring-red-500/70 focus:ring-red-500' : 'focus:ring-2 focus:ring-sky-500 focus:shadow-[0_0_15px_rgba(56,189,248,0.5),_inset_0_0_8px_rgba(56,189,248,0.4)]'}`}
         />
     </div>
 );
@@ -172,7 +170,7 @@ const BetControlButton: React.FC<{ onClick: () => void; children: React.ReactNod
 );
 
 const Controls: React.FC<ControlsProps> = (props) => {
-  const { canBet, gameStatus, isAutoBetting, startAutoBet, stopAutoBet, placeBet, betAmount, history, t } = props;
+  const { canBet, gameStatus, isAutoBetting, startAutoBet, stopAutoBet, placeBet, betAmount, t } = props;
   const [activeTab, setActiveTab] = useState<'manual' | 'auto'>('manual');
   
   const [autoSettings, setAutoSettings] = useState<Omit<AutoBetSettings, 'baseBet'>>({
@@ -221,16 +219,16 @@ const Controls: React.FC<ControlsProps> = (props) => {
 
   return (
     <div className="w-full flex flex-col gap-4">
-        <div className="w-full glass-panel rounded-lg">
+        <div className="w-full glass-panel controls-panel rounded-lg">
             <div className="flex justify-between items-center border-b-2 border-slate-950/50">
                 <div className="relative flex items-center flex-1 gap-4 pl-3">
                     <TabButton active={activeTab === 'manual'} onClick={() => setActiveTab('manual')}>{t('manual')}</TabButton>
                     <TabButton active={activeTab === 'auto'} onClick={() => setActiveTab('auto')}>{t('auto')}</TabButton>
+                    <TabButton active={false} onClick={props.openRules}>Rules</TabButton>
                 </div>
                  <div className="flex items-center gap-4 pr-3 py-2.5">
-                    {/* Rules + Fairness grouped for consistent spacing */}
+                    {/* Fairness button */}
                     <div className="flex items-center gap-2 px-3">
-                        <button onClick={props.openRules} className="text-sm font-bold text-slate-400 hover:text-white uppercase tracking-wider">{t('rules')}</button>
                         <IconButton onClick={props.toggleFairness} title="Provably Fair">
                         <svg
                             xmlns="http://www.w3.org/2000/svg"
@@ -306,7 +304,6 @@ const Controls: React.FC<ControlsProps> = (props) => {
                 </button>
             </div>
         </div>
-        <HistoryBar history={history} />
     </div>
   );
 };
